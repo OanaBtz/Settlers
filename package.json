@@ -1,0 +1,12 @@
+{
+  "name": "CatanChat",
+  "version": "0.0.1",
+  "description": "chat component of Catan application",
+  "dependencies": {
+    "express": "^4.15.2",
+    "socket.io": "^1.7.3"
+  },
+  "devDependencies": {
+    "@angular/cli": "^1.0.0"
+  }
+}
