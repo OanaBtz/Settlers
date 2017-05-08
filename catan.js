@@ -414,8 +414,8 @@ HexTile.prototype.drawNumber = function() {
 
 HexTile.prototype.drawPoints = function(){
 
-	drawingContext.fillStyle = "#FFFFFF";
-	drawingContext.strokeStyle = "#000000";
+	drawingContext.fillStyle = "#adebad";
+	drawingContext.strokeStyle = "#33cc33";
 	drawingContext.lineWidth = 1;
 
 		var angleOffset = Math.PI / 6;
@@ -424,7 +424,7 @@ HexTile.prototype.drawPoints = function(){
 		var yCenter = this.yCenter - size * Math.cos(angleOffset);
 
 		drawingContext.beginPath();
-		drawingContext.arc(xCenter, yCenter, 0.175 * size, 0, 2 * Math.PI, false);
+		drawingContext.arc(xCenter, yCenter, 0.140 * size, 0, 2 * Math.PI, false);
 		
 		drawingContext.closePath();
 	
@@ -439,8 +439,7 @@ HexTile.prototype.drawPoints = function(){
 			var yCenter = this.yCenter - size * Math.cos(newAngle);
 
 			drawingContext.beginPath();
-			drawingContext.arc(xCenter, yCenter, 0.175 * size, 0, 2 * Math.PI, false);
-		
+			drawingContext.arc(xCenter, yCenter, 0.140 * size, 0, 2 * Math.PI, false);
 			drawingContext.closePath();
 
 			drawingContext.stroke();

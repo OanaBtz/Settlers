@@ -6,16 +6,15 @@
    position:relative;
 }
 #content-left { /* THE MAP*/
-    margin-right: 200px;
+    margin-right: 300px;
     height: 100%;
-    width: 60%;
+    /*width: 60%;*/
 
 }
 #content-right { /* THE CHAT */
-    position: relative;
     text-align:center;
     float:right;
-    width:200px;
+
     height: 100%;
 }
 #map-container {
@@ -24,9 +23,6 @@
 }
 button#gen-map-button {
 	width:150px;
-}
-#gen-options {
-	padding: 20px 0px;
 }
 canvas#map-canvas {
 	width:100%;
