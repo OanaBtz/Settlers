@@ -7,8 +7,9 @@
 }
 #content-left { /* THE MAP*/
     margin-right: 200px;
-    height: 90%;
-    /*width: 80%;*/
+    height: 100%;
+    width: 60%;
+
 }
 #content-right { /* THE CHAT */
     position: relative;
