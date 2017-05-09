@@ -5,6 +5,10 @@
     justify-content: space-between;
 }
 
+#content-bottom label,img{
+    flex-shrink: 2;
+}
+
 #houses img {
     height: 10vh;
     width: 7vw;
@@ -12,6 +16,7 @@
 }
 
 #gen-map-button{
+    height: 10%;
     padding: 14px 40px;
     border-radius: 12px;
     border: 3px solid #4caf50;
@@ -56,7 +61,7 @@
 }
 
 label {
-    font-size: 190%;
+    font-size: 2em;
     color: #001a00;
     font-family: "Times New Roman";
     font-style: oblique;
@@ -209,7 +214,7 @@ form {
     background: #e5e5e5;
     margin: 0;
     padding: 0 0 50px 0;
-    height: 400px;
+    height: 90%;
 }
 
 .discussion li {
