@@ -34,41 +34,51 @@ var resourceTypeToImageCanvas = {
 
 // ----- Grid layout globals -----
 
-var dx = size * (1 + Math.cos(Math.PI / 3)) / 2;
-var dy = size * Math.sin(Math.PI / 3);
+// dx = size * (cos0 + cos60)/2 = size* 3/4; 
+// dy = size * si60 = size* sqrt(3)/2
+var dx = size * (1 + Math.cos(Math.PI/3)) / 2;
+var dy = size * Math.sin(Math.PI/3);
+
+
+
 
 // ----- Map definition globals -----
 
 var catanMap = new CatanMap();
+var map = new MapDefinition();
 
-var normalMap = new MapDefinition();
-normalMap.resourceDict = {
-    "desert": 1,
-    "wood": 4,
-    "clay": 3,
-    "wool": 4,
-    "grain": 4,
-    "ore": 3
+
+map.resources = {
+	"desert": 1,
+	"wood": 4,
+	"clay": 3,
+	"wool": 4,
+	"grain": 4,
+	"ore": 3
 };
-normalMap.numberDict = {
-    2: 1,
-    3: 2,
-    4: 2,
-    5: 2,
-    6: 2,
-    8: 2,
-    9: 2,
-    10: 2,
-    11: 2,
-    12: 1
+map.numbers = {
+	2: 1,
+	3: 2,
+	4: 2,
+	5: 2,
+	6: 2,
+	8: 2,
+	9: 2,
+	10: 2,
+	11: 2,
+	12: 1
 }
-normalMap.coordinatesArray = [
-    [-4, 2], [-4, 0], [-4, -2],
-    [-2, 3], [-2, 1], [-2, -1], [-2, -3],
-    [0, 4], [0, 2], [0, 0], [0, -2], [0, -4],
-    [2, 3], [2, 1], [2, -1], [2, -3],
-    [4, 2], [4, 0], [4, -2]
+map.coordinatesArray = [
+	[-4,2],[-4,0],[-4,-2],
+	[-2,3],[-2,1],[-2,-1],[-2,-3],
+	[0,4],[0,2],[0,0],[0,-2],[0,-4],
+	[2,3],[2,1],[2,-1],[2,-3],
+	[4,2],[4,0],[4,-2]
 ];
+
+
+
+//**********************Functions************************
 
 function init() {
 
@@ -81,16 +91,31 @@ function init() {
     addCanvas();
 }
 
+function CatanMap() {
+	
+	this.mapDefinition = null;
+	this.hexTiles = null;
+	this.coordToTile = {};
+	this.coordSpan = [0,0];
+	
+}
+
+function MapDefinition() {
+	this.resources = null;
+	this.numbers = null;
+	this.coordinatesArray = null;
+}
+
+
 function addCanvas() {
-    //$(mapCanvas).attr("width", 600);
-    //$(mapCanvas).attr("height", 400);
-    mapCanvas = document.createElement("canvas");
-    drawingContext = mapCanvas.getContext('2d');
-    mapCanvas.id = "map-canvas";
-    sizeCanvas();
-
-    document.getElementById("map-container").appendChild(mapCanvas);
-
+	//$(mapCanvas).attr("width", 600);
+	//$(mapCanvas).attr("height", 400);
+	mapCanvas = document.createElement("canvas");
+	drawingContext = mapCanvas.getContext('2d');
+	mapCanvas.id = "map-canvas";
+	sizeCanvas();
+	
+	document.getElementById("map-container").appendChild(mapCanvas);	
 }
 
 function sizeCanvas() {
@@ -102,379 +127,265 @@ function sizeCanvas() {
 }
 
 
-function generate() {
-
-    catanMap.defineMap(normalMap);
-    catanMap.generate();
-    catanMap.resize();
-    catanMap.draw();
-
+function generate() {	
+	catanMap.defineMap(map);
+	catanMap.generate();
+	catanMap.resize();
+	catanMap.draw();
 }
 
 
-CatanMap.prototype.defineMap = function (mapDefinition) {
-
-    if (mapDefinition.checkValidity()) {
-
-        this.mapDefinition = mapDefinition;
-
-        var coordRangeX = [0, 0];
-        var coordRangeY = [0, 0];
-
-        for (var i = 0; i < mapDefinition.coordinatesArray.length; i += 1) {
-            var coord = mapDefinition.coordinatesArray[i];
-            coordRangeX = [
-                Math.min(coordRangeX[0], coord[0]),
-                Math.max(coordRangeX[1], coord[0])
-            ];
-            coordRangeY = [
-                Math.min(coordRangeY[0], coord[1]),
-                Math.max(coordRangeY[1], coord[1])
-            ];
-        }
-
-        this.coordSpan = [
-            coordRangeX[1] - coordRangeX[0],
-            coordRangeY[1] - coordRangeY[0]
-        ];
-
-    } else {
-        console.log("Invalid map definition.");
-    }
+CatanMap.prototype.defineMap = function(mapDefinition) {
+	
+	if (mapDefinition.checkValidity()) {
+		
+		this.mapDefinition = mapDefinition;
+		this.coordSpan = [8,8];
+		
+	} else {
+		console.log("Invalid map definition.");
+	}
 }
 
-MapDefinition.prototype.checkValidity = function () {
-    var cArrLen = this.coordinatesArray.length;
-    var rDictLen = this.sumDictVals(this.resourceDict);
-    var nDictLen = this.sumDictVals(this.numberDict);
-    var numDeserts = this.resourceDict["desert"];
-
-    return (cArrLen == rDictLen) && (rDictLen == (nDictLen + numDeserts));
+MapDefinition.prototype.checkValidity = function() {
+	var cArrLen = this.coordinatesArray.length;
+	var resSum = this.sumValues(this.resources);
+	var nrSum = this.sumValues(this.numbers);
+	
+	return (cArrLen == resSum) && (resSum == (nrSum + 1));
+	// +1 is the desert card
 }
 
-CatanMap.prototype.generate = function () {
-
-    if (this.mapDefinition) {
-
-        this.hexTiles = [];
-
-        var numTiles = this.mapDefinition.coordinatesArray.length;
-
-        var tileCoordinates = this.mapDefinition.coordinatesArray.copy();
-
-        var tileNumbers = [];
-        for (var key in this.mapDefinition.numberDict) {
-            for (var i = 0; i < this.mapDefinition.numberDict[key]; i += 1) {
-                tileNumbers.push(parseInt(key));
-            }
-        }
-
-        var tileTypes = [];
-        for (var key in this.mapDefinition.resourceDict) {
-            if (key != "desert") {
-                for (var i = 0; i < this.mapDefinition.resourceDict[key]; i += 1) {
-                    tileTypes.push(key);
-                }
-            }
-        }
-
-        var newCoords = null;
-        var numDeserts = this.mapDefinition.resourceDict["desert"];
-
-        for (var i = 0; i < numDeserts; i += 1) {
-            var desertHexTile = new HexTile();
-            newCoords = tileCoordinates.random(true);
-            desertHexTile.setCoordinate.apply(
-                desertHexTile,
-                newCoords
-            );
-            desertHexTile.setResourceType("desert");
-            this.hexTiles.push(desertHexTile);
-            this.coordToTile[newCoords.toString()] = desertHexTile;
-        }
-
-        // Move all highly productive tile number (6 and 8) to the front
-        // of the tileNumbers array
-        var highlyProductiveIdx = [];
-        highlyProductiveIdx = highlyProductiveIdx.concat(
-            tileNumbers.indexOfArray(6),
-            tileNumbers.indexOfArray(8)
-        );
-        for (var i = 0; i < highlyProductiveIdx.length; i += 1) {
-            tileNumbers.swap(i, highlyProductiveIdx[i]);
-        }
-
-        // Handle all other tiles
-        for (var i = 0; i < (numTiles - numDeserts); i += 1) {
-
-            var newHexTile = new HexTile();
-            newHexTile.setNumber(tileNumbers[i]);
-            newHexTile.setResourceType(tileTypes.random(true));
-
-            var invalid;
-
-            if (newHexTile.isHighlyProductive()) {
-                var tmpCoords = [];
-                do {
-                    newCoords = tileCoordinates.random(true);
-                    newHexTile.setCoordinate.apply(
-                        newHexTile,
-                        newCoords
-                    );
-                    invalid = this.hasHighlyProductiveNeighbors(newHexTile);
-                    if (invalid) {
-                        tmpCoords.push(newCoords);
-                    }
-                } while (invalid);
-                tileCoordinates = tileCoordinates.concat(tmpCoords);
-            } else {
-                newCoords = tileCoordinates.random(true);
-                newHexTile.setCoordinate.apply(
-                    newHexTile,
-                    newCoords
-                );
-            }
-
-            this.hexTiles.push(newHexTile);
-            this.coordToTile[newCoords.toString()] = newHexTile;
-        } // end for loop
-
-    } else {
-        console.log("No map definition.");
-    }
-
+MapDefinition.prototype.sumValues = function(mapDefinitor) {
+	var sum = 0;
+	for (var key in mapDefinitor) {
+		sum += mapDefinitor[key];
+	}
+	return sum;
 }
 
-function loadImages(callback) {
+CatanMap.prototype.generate = function() {
+	
+	if (this.mapDefinition) {
+		
+		this.hexTiles = [];
+		
+		var numTiles = 19;
+		
+		var tileCoordinates = this.mapDefinition.coordinatesArray.copy();
+		
+		var tileNumbers = [];
+		for (var key in this.mapDefinition.numbers) {
+			for (var i = 0; i < this.mapDefinition.numbers[key]; i ++) {
+				tileNumbers.push(parseInt(key));
+			}
+		}
+		
+		var tileTypes = [];
+		for (var key in this.mapDefinition.resources) {
+			if (key != "desert") {
+				for (var i = 0; i < this.mapDefinition.resources[key]; i ++) {
+					tileTypes.push(key);
+				}
+			}
+		}
+		
+		var newCoords = null;
+		
+		// define the desert first on a random position with the type desert but with no number
 
-    var rTypes = [];
-    var imgPaths = [];
-    for (var key in resourceTypeToImageCanvas) {
-        rTypes.push(key);
-        imgPaths.push("images/" + key + ".png");
-    }
-
-    preloadImages(imgPaths, function (images) {
-
-        for (var i = 0; i < imgPaths.length; i += 1) {
-            //resourceTypeToImage[ rTypes[i] ] = images[i];
-            var img = images[i];
-            var imgCanvas = document.createElement("canvas");
-            var imgContext = imgCanvas.getContext("2d");
-
-            imgCanvas.width = img.width;
-            imgCanvas.height = img.height;
-            imgContext.drawImage(img, 0, 0);
-
-            resourceTypeToImageCanvas[rTypes[i]] = imgCanvas;
-        }
-
-        callback();
-
-    });
-
-}
-
-function preloadImages(arr, callback) {
-// 	//http://www.javascriptkit.com/javatutors/preloadimagesplus.shtml
-
-    var newimages = [], loadedimages = 0;
-    var postaction = function () {
-    };
-    var arr = (typeof arr != "object") ? [arr] : arr;
-
-    function imageloadpost() {
-        loadedimages++;
-        if (loadedimages == arr.length) {
-            callback(newimages); //call postaction and pass in newimages array as parameter
-        }
-    }
-
-    for (var i = 0; i < arr.length; i++) {
-        newimages[i] = new Image();
-        newimages[i].src = arr[i];
-        newimages[i].onload = function () {
-            imageloadpost();
-        }
-        newimages[i].onerror = function () {
-            imageloadpost();
-        }
-    }
-
-}
+		var desertHexTile = new HexTile();
+		newCoords = tileCoordinates.random(true);
+		desertHexTile.setCoordinate.apply(
+			desertHexTile,
+			newCoords
+		);
+		desertHexTile.setResourceType("desert");
+		//push the desert to the array
+		this.hexTiles.push(desertHexTile);
+		this.coordToTile[newCoords.toString()] = desertHexTile;
+		
 
 
-function CatanMap() {
-
-    this.mapDefinition = null;
-    this.hexTiles = null;
-    this.coordToTile = {};
-    this.coordSpan = [0, 0];
-
-}
-
-function MapDefinition() {
-    this.resourceDict = null;
-    this.numberDict = null;
-    this.coordinatesArray = null;
-}
-
-MapDefinition.prototype.sumDictVals = function (dict) {
-    var sum = 0;
-    for (var key in dict) {
-        sum += dict[key];
-    }
-    return sum;
-}
+		// Move all highly productive tile number (6 and 8) to the front
+		// of the tileNumbers array
+		var highlyProductiveIdx = [];
+		highlyProductiveIdx = highlyProductiveIdx.concat(
+			tileNumbers.indexOfArray(6),
+			tileNumbers.indexOfArray(8)
+		);
+		for (var i = 0; i < highlyProductiveIdx.length; i ++) {
+			tileNumbers.swap(i,highlyProductiveIdx[i]);
+		}
 
 
-CatanMap.prototype.draw = function () {
+		
+		// Handle all other tiles
+		for (var i = 0; i < (numTiles - 1); i ++) {
+			
+			var newHexTile = new HexTile();
+			newHexTile.setNumber(tileNumbers[i]);
+			newHexTile.setResourceType(tileTypes.random(true));
 
-    if (this.hexTiles) {
-        drawingContext.clear();
-        for (var i = 0; i < this.hexTiles.length; i += 1) {
-            this.hexTiles[i].draw();
-        }
-    }
-
-}
-CatanMap.prototype.resize = function () {
-    /* Size = Height / ( (coordSpacing + 2) * Math.sin(Math.PI/3) )
-     * Size = Width / ( (coordSpacing * (1 + Math.cos(Math.PI/3)) / 2) + 2 )
-     */
-    var wSize = (mapCanvas.width - 10) /
-        ( (this.coordSpan[0] * (1 + Math.cos(Math.PI / 3)) / 2) + 2 );
-    var hSize = (mapCanvas.height - 10) /
-        ( (this.coordSpan[1] + 2) * Math.sin(Math.PI / 3) );
-    size = Math.floor(Math.min(wSize, hSize));
-    dx = size * (1 + Math.cos(Math.PI / 3)) / 2;
-    dy = size * Math.sin(Math.PI / 3);
-}
-CatanMap.prototype.getAdjacentTiles = function (tile) {
-
-    var tileX = tile.gridX;
-    var tileY = tile.gridY;
-
-    var adjTiles = [];
-
-    // (+0,+2), (+2,+1), (+2,-1), (+0,-2), (-2,-1), (-2,1)
-    xshift = [0, 2, 2, 0, -2, -2];
-    yshift = [2, 1, -1, -2, -1, 1];
-
-    for (var i = 0; i < 6; i += 1) {
-        var adjTile = this.coordToTile[
-            [tileX + xshift[i], tileY + yshift[i]].toString()
-            ];
-        // Will be null if no hex tile found at that coordinate
-        if (adjTile) {
-            adjTiles.push(adjTile);
-        }
-    }
-
-    return adjTiles;
-
-}
-CatanMap.prototype.hasHighlyProductiveNeighbors = function (tile) {
-    var adjacentTiles = this.getAdjacentTiles(tile);
-    for (var i = 0; i < adjacentTiles.length; i += 1) {
-        if (adjacentTiles[i].isHighlyProductive()) {
-            return true;
-        }
-    }
-    return false;
+			var invalid;
+			
+			if ( newHexTile.isHighlyProductive() ) {
+				var tmpCoords = [];
+				do {
+					newCoords = tileCoordinates.random(true);
+					newHexTile.setCoordinate.apply(
+						newHexTile,
+						newCoords
+					);
+					// 2 highly productive hexagons can`t be neighbors
+					invalid = this.hasHighlyProductiveNeighbors(newHexTile);
+					if (invalid) {
+						tmpCoords.push(newCoords);
+					}
+				} while ( invalid );
+				tileCoordinates = tileCoordinates.concat(tmpCoords);
+			} else {
+				newCoords = tileCoordinates.random(true);
+				newHexTile.setCoordinate.apply(
+					newHexTile,
+					newCoords
+				);
+			}
+			
+			this.hexTiles.push(newHexTile);
+			this.coordToTile[newCoords.toString()] = newHexTile;
+		} // end for loop
+		
+	} else {
+		console.log("No map definition.");
+	}
+	
 }
 
 function HexTile() {
-    this.gridX;
-    this.gridY;
-    this.xCenter;
-    this.yCenter;
-    this.resourceType = "none";
-    this.fillStyle = defaultFillStyle;
-    this.number;
+	this.gridX;
+	this.gridY;
+	this.xCenter;
+	this.yCenter;
+	this.resourceType = "none";
+	this.fillStyle = defaultFillStyle;
+	this.number;
+	this.points = [];
 }
+
 HexTile.prototype.strokeStyle = strokeStyle;
 HexTile.prototype.lineWidth = lineWidth;
 HexTile.prototype.hexColorMap = resourceTypeToColor;
 HexTile.prototype.size = size;
-HexTile.prototype.setResourceType = function (resourceType) {
-    if (this.hexColorMap[resourceType]) {
-        this.resourceType = resourceType;
-        this.fillStyle = this.hexColorMap[resourceType];
-    } else {
-        console.log("Unrecognized resource type:", resourceType);
-    }
+
+HexTile.prototype.setResourceType = function(resourceType) {
+	if (this.hexColorMap[resourceType]) {
+		this.resourceType = resourceType;
+		this.fillStyle = this.hexColorMap[resourceType];
+	} else {
+		console.log("Unrecognized resource type:",resourceType);
+	}
 }
-HexTile.prototype.isHighlyProductive = function () {
-    return ( (this.number == 6) || (this.number == 8) );
+
+HexTile.prototype.isHighlyProductive = function() {
+	return ( (this.number == 6) || (this.number == 8) );
 }
-HexTile.prototype.setNumber = function (number) {
-    this.number = number;
+
+CatanMap.prototype.hasHighlyProductiveNeighbors = function(tile) {
+	var adjacentTiles = this.getAdjacentTiles(tile);
+	for (var i = 0; i < adjacentTiles.length; i += 1) {
+		if ( adjacentTiles[i].isHighlyProductive() ) {
+			return true;
+		}
+	}
+	return false;
+}
+HexTile.prototype.setNumber = function(number) {
+	this.number = number;
 }
 HexTile.prototype.setCoordinate = function (x, y) {
     this.gridX = x;
     this.gridY = y;
 }
-HexTile.prototype.draw = function () {
-    this.xCenter = canvasCenterX + dx * this.gridX;
-    this.yCenter = canvasCenterY + dy * this.gridY;
 
-    this.drawBase();
-    // Don't draw number if desert
-    if (this.number) {
-        this.drawNumber();
-    }
+
+
+CatanMap.prototype.draw = function() {
+
+	if (this.hexTiles) {
+		drawingContext.clear();
+		for (var i = 0; i < this.hexTiles.length; i ++) {
+			this.hexTiles[i].draw();
+		}
+	}
+	
 }
-HexTile.prototype.drawBase = function () {
 
-    if (mapStyle == "retro") {
-        drawingContext.lineWidth = 5;
-        drawingContext.fillStyle = "rgba(255,255,255,0)";
-        drawingContext.strokeStyle = "#FAEB96";
-    } else {
-        drawingContext.lineWidth = this.lineWidth;
-        drawingContext.fillStyle = this.fillStyle;
-        drawingContext.strokeStyle = this.strokeStyle;
-    }
 
-    var angleOffset = Math.PI / 6;
+HexTile.prototype.draw = function() {
+	this.xCenter = canvasCenterX + dx*this.gridX;
+	//console.log(this.xCenter);
+	this.yCenter = canvasCenterY + dy*this.gridY;
+	//console.log(this.yCenter);
+	this.drawBase();
+	// Don't draw number if desert
+	if (this.number) {
+		this.drawNumber();
+	}
+	this.drawPoints();
+}
 
-    // Begin Path and start at top of hexagon
-    drawingContext.beginPath();
-    drawingContext.moveTo(
-        this.xCenter + size * Math.sin(angleOffset),
-        this.yCenter - size * Math.cos(angleOffset)
-    );
-    // Move clockwise and draw hexagon
-    var newAngle;
-    for (var i = 1; i <= 6; i += 1) {
-        newAngle = i * Math.PI / 3;
-        drawingContext.lineTo(
-            this.xCenter + size * Math.sin(newAngle + angleOffset),
-            this.yCenter - size * Math.cos(newAngle + angleOffset)
-        );
-    }
-    drawingContext.closePath();
 
-    if (mapStyle == "retro") {
-
-        var imgCanvas = resourceTypeToImageCanvas[this.resourceType];
-
-        drawingContext.drawImage(
-            imgCanvas,
-            0, 0, imgCanvas.width, imgCanvas.height,
-            this.xCenter - size,
-            this.yCenter - dy,
-            2 * size,
-            2 * dy
-        );
-
-    } else {
-        drawingContext.fill();
-    }
-
-    drawingContext.stroke();
-
+HexTile.prototype.drawBase = function() {
+	
+	if (mapStyle == "retro") {
+		drawingContext.lineWidth = 5;
+		drawingContext.fillStyle = "rgba(255,255,255,0)";
+		drawingContext.strokeStyle = "#FAEB96";
+	} else {
+		drawingContext.lineWidth = this.lineWidth;
+		drawingContext.fillStyle = this.fillStyle;
+		drawingContext.strokeStyle = this.strokeStyle;
+	}
+	
+	var angleOffset = Math.PI / 6;
+	
+	// Begin Path and start at top of hexagon
+	drawingContext.beginPath();
+	drawingContext.moveTo (
+		this.xCenter + size * Math.sin(angleOffset),
+		this.yCenter - size * Math.cos(angleOffset)
+	);
+	// Move clockwise and draw hexagon
+	var newAngle;
+	for (var i = 1; i <= 6; i += 1) {
+		newAngle = i * Math.PI / 3;
+		drawingContext.lineTo (
+			this.xCenter + size * Math.sin(newAngle + angleOffset),
+			this.yCenter - size * Math.cos(newAngle + angleOffset)
+		);
+	}
+	drawingContext.closePath();
+	
+	if (mapStyle == "retro") {
+		
+		var imgCanvas = resourceTypeToImageCanvas[this.resourceType];
+		
+		drawingContext.drawImage(
+			imgCanvas,
+			0, 0, imgCanvas.width, imgCanvas.height, 
+			this.xCenter - size,
+			this.yCenter - dy,
+			2*size,
+			2*dy
+		);
+		
+	} else {
+		drawingContext.fill();
+	}
+	
+	drawingContext.stroke();
+	
 }
 HexTile.prototype.drawNumber = function () {
 
@@ -508,13 +419,169 @@ HexTile.prototype.drawNumber = function () {
 
 }
 
-Array.prototype.random = function (removeElem) {
-    var idx = Math.floor(Math.random() * this.length);
-    var val = this[idx];
-    if (removeElem) {
-        this.splice(idx, 1);
+function Point(xCenter, yCenter, radius, startAngle, endAngle, counterclockwise){
+	this.xCenter = xCenter;
+	this.yCenter = yCenter;
+	this.radius = radius;
+	this.startAngle = startAngle;
+	this.endAngle = endAngle;
+	this.counterclockwise = counterclockwise;
+}
+
+
+HexTile.prototype.drawPoints = function(){
+
+	drawingContext.fillStyle = "#adebad";
+	drawingContext.strokeStyle = "#33cc33";
+	drawingContext.lineWidth = 1;
+
+
+
+	var points = [];
+		
+	var angleOffset = Math.PI / 6;
+	var xCenter = this.xCenter + size * Math.sin(angleOffset);
+	var yCenter = this.yCenter - size * Math.cos(angleOffset);
+	var radius = 0.140 * size;
+	var startAngle = 0;
+	var endAngle = 2*Math.PI;
+	var counterclockwise = false;
+
+		drawingContext.beginPath();
+
+		drawingContext.arc(xCenter, yCenter, radius, startAngle, endAngle, counterclockwise);
+		var newPoint = new Point(xCenter, yCenter, radius, startAngle, endAngle, counterclockwise);
+		points.push(newPoint);
+
+		drawingContext.closePath();
+	
+		drawingContext.stroke();
+		drawingContext.fill();
+
+		var newAngle;
+		for (var i = 3; i <= 11; i +=2 ) {
+			newAngle = i* Math.PI / 6 ;
+			
+			var xCenter = this.xCenter + size * Math.sin(newAngle);
+			var yCenter = this.yCenter - size * Math.cos(newAngle);
+
+			drawingContext.beginPath();
+			newPoint = drawingContext.arc(xCenter, yCenter, radius, startAngle, endAngle, counterclockwise);
+			var newPoint = new Point(xCenter, yCenter, radius, startAngle, endAngle, counterclockwise);
+			points.push(newPoint);
+			drawingContext.closePath();
+
+			drawingContext.stroke();
+			drawingContext.fill();
+		
+		}
+		this.points = points;
+		// console.log(points);
+		// console.log(this.points);
+}
+
+CatanMap.prototype.resize = function() {
+/* Size = Height / ( (coordSpacing + 2) * Math.sin(Math.PI/3) )
+ * Size = Width / ( (coordSpacing * (1 + Math.cos(Math.PI/3)) / 2) + 2 )
+*/
+	var wSize = (mapCanvas.width-10) / 
+		( (this.coordSpan[0] * (1 + Math.cos(Math.PI/3)) / 2) + 2 );
+	var hSize = (mapCanvas.height-10) / 
+		( (this.coordSpan[1] + 2) * Math.sin(Math.PI/3) );
+	size = Math.floor(Math.min(wSize, hSize));
+	dx = size * (1 + Math.cos(Math.PI/3)) / 2;
+	dy = size * Math.sin(Math.PI/3);
+}
+
+
+function loadImages(callback) {
+
+	var rTypes = [];
+	var imgPaths = [];
+	for (var key in resourceTypeToImageCanvas) {
+		rTypes.push(key);
+		imgPaths.push("images/"+key+".png");
+	}
+	
+	preloadImages(imgPaths, function(images) {
+		
+		for (var i = 0; i < imgPaths.length; i += 1) {
+			//resourceTypeToImage[ rTypes[i] ] = images[i];
+			var img = images[i];
+			var imgCanvas = document.createElement("canvas");
+			var imgContext = imgCanvas.getContext("2d");
+			
+			imgCanvas.width = img.width;
+			imgCanvas.height = img.height;
+			imgContext.drawImage(img, 0, 0);
+			
+			resourceTypeToImageCanvas[ rTypes[i] ] = imgCanvas;
+		}
+		
+		callback();
+		
+	});
+	
+}
+
+ function preloadImages(arr, callback){
+// 	//http://www.javascriptkit.com/javatutors/preloadimagesplus.shtml
+	
+    var newimages=[], loadedimages=0;
+    var postaction=function(){};
+    var arr=(typeof arr!="object")? [arr] : arr;
+    function imageloadpost(){
+        loadedimages++;
+        if (loadedimages==arr.length){
+            callback(newimages); //call postaction and pass in newimages array as parameter
+        }
     }
-    return val;
+    for (var i=0; i<arr.length; i++){
+        newimages[i]=new Image();
+        newimages[i].src=arr[i];
+        newimages[i].onload=function(){
+            imageloadpost();
+        }
+        newimages[i].onerror=function(){
+            imageloadpost();
+        }
+    }
+
+}
+
+CatanMap.prototype.getAdjacentTiles = function(tile) {
+	
+	var tileX = tile.gridX;
+	var tileY = tile.gridY;
+	
+	var adjTiles = [];
+	
+	// (+0,+2), (+2,+1), (+2,-1), (+0,-2), (-2,-1), (-2,1)
+	xshift = [0, 2, 2, 0, -2, -2];
+	yshift = [2, 1, -1, -2, -1, 1];
+	
+	for (var i = 0; i < 6; i += 1) {
+		var adjTile = this.coordToTile[
+			[tileX + xshift[i], tileY + yshift[i]].toString()
+		];
+		// Will be null if no hex tile found at that coordinate
+		if (adjTile) {
+			adjTiles.push(adjTile);
+		}
+	}
+	
+	return adjTiles;
+	
+}
+
+
+Array.prototype.random = function(removeElem) {
+	var idx = Math.floor(Math.random() * this.length);
+	var val = this[idx];
+	if (removeElem) {
+		this.splice(idx,1);
+	}
+	return val;
 }
 Array.prototype.copy = function () {
     return this.slice();
@@ -558,13 +625,14 @@ CanvasRenderingContext2D.prototype.clear =
 //**************************CHAT*****************************
 
 $(function () {
-    var socket = io();
-    $('form').submit(function () {
-        socket.emit('chat message', $('#m').val());
-        $('#m').val('');
-        return false;
-    });
-    socket.on('chat message', function (msg) {
-        $('#messages').append($('<li>').text(msg));
-    });
+            var socket = io();
+            $('form').submit(function(){
+                socket.emit('chat message', $('#m').val());
+                $('#m').val('');
+                return false;
+            });
+        socket.on('chat message', function(msg){
+            $('.messages').append($('<p>').text(msg));
+        });
+
 });
