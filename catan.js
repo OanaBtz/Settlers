@@ -266,11 +266,13 @@ function HexTile() {
 	this.resourceType = "none";
 	this.fillStyle = defaultFillStyle;
 	this.number;
+	this.points = [];
 }
 HexTile.prototype.strokeStyle = strokeStyle;
 HexTile.prototype.lineWidth = lineWidth;
 HexTile.prototype.hexColorMap = resourceTypeToColor;
 HexTile.prototype.size = size;
+
 HexTile.prototype.setResourceType = function(resourceType) {
 	if (this.hexColorMap[resourceType]) {
 		this.resourceType = resourceType;
@@ -411,6 +413,15 @@ HexTile.prototype.drawNumber = function() {
 	
 }
 
+function Point(xCenter, yCenter, radius, startAngle, endAngle, counterclockwise){
+	this.xCenter = xCenter;
+	this.yCenter = yCenter;
+	this.radius = radius;
+	this.startAngle = startAngle;
+	this.endAngle = endAngle;
+	this.counterclockwise = counterclockwise;
+}
+
 
 HexTile.prototype.drawPoints = function(){
 
@@ -418,14 +429,24 @@ HexTile.prototype.drawPoints = function(){
 	drawingContext.strokeStyle = "#33cc33";
 	drawingContext.lineWidth = 1;
 
-		var angleOffset = Math.PI / 6;
+
+
+	var points = [];
 		
-		var xCenter = this.xCenter + size * Math.sin(angleOffset);
-		var yCenter = this.yCenter - size * Math.cos(angleOffset);
+	var angleOffset = Math.PI / 6;
+	var xCenter = this.xCenter + size * Math.sin(angleOffset);
+	var yCenter = this.yCenter - size * Math.cos(angleOffset);
+	var radius = 0.140 * size;
+	var startAngle = 0;
+	var endAngle = 2*Math.PI;
+	var counterclockwise = false;
 
 		drawingContext.beginPath();
-		drawingContext.arc(xCenter, yCenter, 0.140 * size, 0, 2 * Math.PI, false);
-		
+
+		drawingContext.arc(xCenter, yCenter, radius, startAngle, endAngle, counterclockwise);
+		var newPoint = new Point(xCenter, yCenter, radius, startAngle, endAngle, counterclockwise);
+		points.push(newPoint);
+
 		drawingContext.closePath();
 	
 		drawingContext.stroke();
@@ -439,13 +460,18 @@ HexTile.prototype.drawPoints = function(){
 			var yCenter = this.yCenter - size * Math.cos(newAngle);
 
 			drawingContext.beginPath();
-			drawingContext.arc(xCenter, yCenter, 0.140 * size, 0, 2 * Math.PI, false);
+			newPoint = drawingContext.arc(xCenter, yCenter, radius, startAngle, endAngle, counterclockwise);
+			var newPoint = new Point(xCenter, yCenter, radius, startAngle, endAngle, counterclockwise);
+			points.push(newPoint);
 			drawingContext.closePath();
 
 			drawingContext.stroke();
 			drawingContext.fill();
 		
 		}
+		this.points = points;
+		// console.log(points);
+		// console.log(this.points);
 }
 
 CatanMap.prototype.resize = function() {
@@ -600,6 +626,6 @@ $(function () {
                 return false;
             });
         socket.on('chat message', function(msg){
-            $('#messages').append($('<li>').text(msg));
+            $('.messages').append($('<p>').text(msg));
         });
 });
