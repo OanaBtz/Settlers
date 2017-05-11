@@ -15,28 +15,32 @@ var defaultFillStyle = "#ffffff";
 var strokeStyle = "#000000";
 var lineWidth = 3;
 var resourceTypeToColor = {
-	"ore": "#363636",
-	"clay": "#E83200",
-	"wool": "#98E82E",
-	"wood": "#0A7300",
-	"grain": "#E0E000",
-	"desert": "#F2F0A0",
-	"none": "#ffffff"
+    "ore": "#363636",
+    "clay": "#E83200",
+    "wool": "#98E82E",
+    "wood": "#0A7300",
+    "grain": "#E0E000",
+    "desert": "#F2F0A0",
+    "none": "#ffffff"
 };
 var resourceTypeToImageCanvas = {
-	"ore": null,
-	"clay": null,
-	"wool": null,
-	"wood": null,
-	"grain": null,
-	"desert": null
+    "ore": null,
+    "clay": null,
+    "wool": null,
+    "wood": null,
+    "grain": null,
+    "desert": null
 };
 
 // ----- Grid layout globals -----
+
 // dx = size * (cos0 + cos60)/2 = size* 3/4; 
 // dy = size * si60 = size* sqrt(3)/2
 var dx = size * (1 + Math.cos(Math.PI/3)) / 2;
 var dy = size * Math.sin(Math.PI/3);
+
+
+
 
 // ----- Map definition globals -----
 
@@ -78,13 +82,13 @@ map.coordinatesArray = [
 
 function init() {
 
-	loadImages(function() {
-		var button = $('button#gen-map-button')[0];
-		$(button).click(generate);
-		button.disabled = false;
-		button.innerHTML = "Play new game";
-	});
-	addCanvas();
+    loadImages(function () {
+        var button = $('button#gen-map-button')[0];
+        $(button).click(generate);
+        button.disabled = false;
+        button.innerHTML = "Play new game";
+    });
+    addCanvas();
 }
 
 function CatanMap() {
@@ -115,11 +119,11 @@ function addCanvas() {
 }
 
 function sizeCanvas() {
-	var mapContainer = $("div#map-container")[0];
-	$(mapCanvas).attr("width", $(mapContainer).width());
-	$(mapCanvas).attr("height", $(mapContainer).height());
-	canvasCenterY = mapCanvas.height/2;
-	canvasCenterX = mapCanvas.width/2;
+    var mapContainer = $("div#map-container")[0];
+    $(mapCanvas).attr("width", $(mapContainer).width());
+    $(mapCanvas).attr("height", $(mapContainer).height());
+    canvasCenterY = mapCanvas.height / 2;
+    canvasCenterX = mapCanvas.width / 2;
 }
 
 
@@ -268,6 +272,7 @@ function HexTile() {
 	this.number;
 	this.points = [];
 }
+
 HexTile.prototype.strokeStyle = strokeStyle;
 HexTile.prototype.lineWidth = lineWidth;
 HexTile.prototype.hexColorMap = resourceTypeToColor;
@@ -298,10 +303,11 @@ CatanMap.prototype.hasHighlyProductiveNeighbors = function(tile) {
 HexTile.prototype.setNumber = function(number) {
 	this.number = number;
 }
-HexTile.prototype.setCoordinate = function(x,y) {
-	this.gridX = x;
-	this.gridY = y;
+HexTile.prototype.setCoordinate = function (x, y) {
+    this.gridX = x;
+    this.gridY = y;
 }
+
 
 
 CatanMap.prototype.draw = function() {
@@ -381,36 +387,36 @@ HexTile.prototype.drawBase = function() {
 	drawingContext.stroke();
 	
 }
-HexTile.prototype.drawNumber = function() {
-	
-	drawingContext.fillStyle = "#FFFFFF";
-	drawingContext.strokeStyle = "#000000";
-	drawingContext.lineWidth = 3;
-	
-	drawingContext.beginPath();
-	drawingContext.arc(this.xCenter, this.yCenter, 0.375 * size,
-		0, 2 * Math.PI, false);
-	drawingContext.closePath();
-	
-	drawingContext.stroke();
-	drawingContext.fill();
-	
-	
-	var fontSizePt = Math.ceil(30/40*(.45*size-8)+6);
-	
-	drawingContext.font = "bold " + fontSizePt + "pt sans-serif";
-	drawingContext.textAlign = "center";
-	if ( this.isHighlyProductive() ) {
-		drawingContext.fillStyle = "#FF0000";
-	} else {
-		drawingContext.fillStyle = "#000000";
-	}
-	drawingContext.fillText(
-		this.number.toString(),
-		this.xCenter,
-		this.yCenter + Math.ceil( 0.85 * fontSizePt/2 )
-	);
-	
+HexTile.prototype.drawNumber = function () {
+
+    drawingContext.fillStyle = "#FFFFFF";
+    drawingContext.strokeStyle = "#000000";
+    drawingContext.lineWidth = 3;
+
+    drawingContext.beginPath();
+    drawingContext.arc(this.xCenter, this.yCenter, 0.375 * size,
+        0, 2 * Math.PI, false);
+    drawingContext.closePath();
+
+    drawingContext.stroke();
+    drawingContext.fill();
+
+
+    var fontSizePt = Math.ceil(30 / 40 * (.45 * size - 8) + 6);
+
+    drawingContext.font = "bold " + fontSizePt + "pt sans-serif";
+    drawingContext.textAlign = "center";
+    if (this.isHighlyProductive()) {
+        drawingContext.fillStyle = "#FF0000";
+    } else {
+        drawingContext.fillStyle = "#000000";
+    }
+    drawingContext.fillText(
+        this.number.toString(),
+        this.xCenter,
+        this.yCenter + Math.ceil(0.85 * fontSizePt / 2)
+    );
+
 }
 
 function Point(xCenter, yCenter, radius, startAngle, endAngle, counterclockwise){
@@ -577,44 +583,44 @@ Array.prototype.random = function(removeElem) {
 	}
 	return val;
 }
-Array.prototype.copy = function() {
-	return this.slice();
+Array.prototype.copy = function () {
+    return this.slice();
 }
-Array.prototype.indexOfArray = function(val) {
-	var arr = [];
-	var sIdx = 0;
-	var tmpCopy = this.copy();
-	do {
-		var rIdx = tmpCopy.indexOf(val);
-		var valid = (rIdx >= 0);
-		if (valid) {
-			tmpCopy.splice(0, rIdx + 1);
-			arr.push(sIdx + rIdx);
-			sIdx += rIdx + 1;
-		}
-	} while (valid);
-	return arr;
+Array.prototype.indexOfArray = function (val) {
+    var arr = [];
+    var sIdx = 0;
+    var tmpCopy = this.copy();
+    do {
+        var rIdx = tmpCopy.indexOf(val);
+        var valid = (rIdx >= 0);
+        if (valid) {
+            tmpCopy.splice(0, rIdx + 1);
+            arr.push(sIdx + rIdx);
+            sIdx += rIdx + 1;
+        }
+    } while (valid);
+    return arr;
 }
-Array.prototype.swap = function(idx1, idx2) {
-	var tmp = this[idx1];
-	this[idx1] = this[idx2];
-	this[idx2] = tmp;
+Array.prototype.swap = function (idx1, idx2) {
+    var tmp = this[idx1];
+    this[idx1] = this[idx2];
+    this[idx2] = tmp;
 }
 
 // http://stackoverflow.com/questions/2142535/how-to-clear-the-canvas-for-redrawing
-CanvasRenderingContext2D.prototype.clear = 
-  CanvasRenderingContext2D.prototype.clear || function (preserveTransform) {
-    if (preserveTransform) {
-      this.save();
-      this.setTransform(1, 0, 0, 1, 0, 0);
-    }
+CanvasRenderingContext2D.prototype.clear =
+    CanvasRenderingContext2D.prototype.clear || function (preserveTransform) {
+        if (preserveTransform) {
+            this.save();
+            this.setTransform(1, 0, 0, 1, 0, 0);
+        }
 
-    this.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        this.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
-    if (preserveTransform) {
-      this.restore();
-    }           
-};
+        if (preserveTransform) {
+            this.restore();
+        }
+    };
 
 //**************************CHAT*****************************
 
@@ -628,4 +634,5 @@ $(function () {
         socket.on('chat message', function(msg){
             $('.messages').append($('<p>').text(msg));
         });
+
 });
