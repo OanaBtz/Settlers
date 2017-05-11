@@ -77,18 +77,13 @@ label {
 }
 
 #content-right { /* THE CHAT */
-<<<<<<< HEAD
-    text-align:center;
-    float:right;
 
-    height: 100%;
-=======
     position: relative;
     text-align: center;
     float: right;
     width: 200px;
     height: 88vh;
->>>>>>> bc2db17f38bddb4ed6880d12b1e18136ea918c05
+
 }
 
 #map-container {
@@ -99,14 +94,12 @@ label {
 button#gen-map-button {
     width: 150px;
 }
-<<<<<<< HEAD
-=======
+
 
 #gen-options {
     padding: 20px 0px;
 }
 
->>>>>>> bc2db17f38bddb4ed6880d12b1e18136ea918c05
 canvas#map-canvas {
     width: 100%;
     height: 100%;
