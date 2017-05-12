@@ -271,6 +271,7 @@ function HexTile() {
 	this.fillStyle = defaultFillStyle;
 	this.number;
 	this.points = [];
+	this.roads = [];
 }
 
 HexTile.prototype.strokeStyle = strokeStyle;
@@ -335,8 +336,18 @@ HexTile.prototype.draw = function() {
 	this.drawPoints();
 }
 
+function Road(ax,ay,bx,by){
+	this.ax = ax;
+	this.ay = ay;
+	this.bx = bx;
+	this.by = by;
+	this.strokeStyle = strokeStyle;
+}
+
 
 HexTile.prototype.drawBase = function() {
+
+	var roads = [];
 	
 	if (mapStyle == "retro") {
 		drawingContext.lineWidth = 5;
@@ -348,23 +359,35 @@ HexTile.prototype.drawBase = function() {
 		drawingContext.strokeStyle = this.strokeStyle;
 	}
 	
-	var angleOffset = Math.PI / 6;
+	
 	
 	// Begin Path and start at top of hexagon
+
+	var angleOffset = Math.PI / 6;
 	drawingContext.beginPath();
-	drawingContext.moveTo (
-		this.xCenter + size * Math.sin(angleOffset),
-		this.yCenter - size * Math.cos(angleOffset)
-	);
+	var ax= this.xCenter + size * Math.sin(angleOffset);
+	var ay= this.yCenter - size * Math.cos(angleOffset);
+	
+	var bx;
+	var by;
+	drawingContext.moveTo (ax,ay);
+	
 	// Move clockwise and draw hexagon
 	var newAngle;
-	for (var i = 1; i <= 6; i += 1) {
+	for (var i = 1; i <= 6; i ++) {
 		newAngle = i * Math.PI / 3;
-		drawingContext.lineTo (
-			this.xCenter + size * Math.sin(newAngle + angleOffset),
-			this.yCenter - size * Math.cos(newAngle + angleOffset)
-		);
+
+		bx = this.xCenter + size * Math.sin(newAngle + angleOffset);
+		by = this.yCenter - size * Math.cos(newAngle + angleOffset);
+
+		drawingContext.lineTo (bx,by);
+	
+		var road = new Road(ax,bx,ay,by);
+		roads.push(road);
+		ax=bx;
+		ay=by;
 	}
+	console.log(roads);
 	drawingContext.closePath();
 	
 	if (mapStyle == "retro") {
@@ -438,28 +461,14 @@ HexTile.prototype.drawPoints = function(){
 
 
 	var points = [];
-		
-	var angleOffset = Math.PI / 6;
-	var xCenter = this.xCenter + size * Math.sin(angleOffset);
-	var yCenter = this.yCenter - size * Math.cos(angleOffset);
 	var radius = 0.140 * size;
 	var startAngle = 0;
 	var endAngle = 2*Math.PI;
 	var counterclockwise = false;
 
-		drawingContext.beginPath();
-
-		drawingContext.arc(xCenter, yCenter, radius, startAngle, endAngle, counterclockwise);
-		var newPoint = new Point(xCenter, yCenter, radius, startAngle, endAngle, counterclockwise);
-		points.push(newPoint);
-
-		drawingContext.closePath();
 	
-		drawingContext.stroke();
-		drawingContext.fill();
-
 		var newAngle;
-		for (var i = 3; i <= 11; i +=2 ) {
+		for (var i = 1; i <= 11; i +=2 ) {
 			newAngle = i* Math.PI / 6 ;
 			
 			var xCenter = this.xCenter + size * Math.sin(newAngle);
