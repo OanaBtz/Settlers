@@ -74,6 +74,9 @@ input{
   width:73%;
 }
 
+.build{
+  background-color: #FAEB96;
+}
 
 /***************************************************************/
 @import url(http://weloveiconfonts.com/api/?family=typicons);

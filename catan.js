@@ -44,9 +44,12 @@ var dy = size * Math.sin(Math.PI/3);
 
 // ----- Map definition globals -----
 
+
+
+
 var catanMap = new CatanMap();
 var map = new MapDefinition();
-
+var points = [];
 
 map.resources = {
 	"desert": 1,
@@ -333,7 +336,7 @@ HexTile.prototype.draw = function() {
 	if (this.number) {
 		this.drawNumber();
 	}
-	this.drawPoints();
+	this.findPoints();
 }
 
 function Road(ax,ay,bx,by){
@@ -358,8 +361,6 @@ HexTile.prototype.drawBase = function() {
 		drawingContext.fillStyle = this.fillStyle;
 		drawingContext.strokeStyle = this.strokeStyle;
 	}
-	
-	
 	
 	// Begin Path and start at top of hexagon
 
@@ -387,7 +388,7 @@ HexTile.prototype.drawBase = function() {
 		ax=bx;
 		ay=by;
 	}
-	console.log(roads);
+	//console.log(roads);
 	drawingContext.closePath();
 	
 	if (mapStyle == "retro") {
@@ -452,21 +453,17 @@ function Point(xCenter, yCenter, radius, startAngle, endAngle, counterclockwise)
 }
 
 
-HexTile.prototype.drawPoints = function(){
-
-	drawingContext.fillStyle = "#adebad";
-	drawingContext.strokeStyle = "#33cc33";
-	drawingContext.lineWidth = 1;
 
 
 
-	var points = [];
+HexTile.prototype.findPoints = function(){
+
+	var pointsArray = [];
 	var radius = 0.140 * size;
 	var startAngle = 0;
 	var endAngle = 2*Math.PI;
 	var counterclockwise = false;
 
-	
 		var newAngle;
 		for (var i = 1; i <= 11; i +=2 ) {
 			newAngle = i* Math.PI / 6 ;
@@ -474,19 +471,57 @@ HexTile.prototype.drawPoints = function(){
 			var xCenter = this.xCenter + size * Math.sin(newAngle);
 			var yCenter = this.yCenter - size * Math.cos(newAngle);
 
-			drawingContext.beginPath();
-			newPoint = drawingContext.arc(xCenter, yCenter, radius, startAngle, endAngle, counterclockwise);
 			var newPoint = new Point(xCenter, yCenter, radius, startAngle, endAngle, counterclockwise);
+			
+			pointsArray.push(newPoint);
+			
 			points.push(newPoint);
-			drawingContext.closePath();
-
-			drawingContext.stroke();
-			drawingContext.fill();
 		
-		}
-		this.points = points;
-		// console.log(points);
-		// console.log(this.points);
+		}	
+}
+
+
+function drawPoints(){
+
+	drawingContext.fillStyle = "#adebad";
+	drawingContext.strokeStyle = "#33cc33";
+	drawingContext.lineWidth = 1;
+
+	for(var i=0; i<114; i++){
+	
+		drawingContext.beginPath();
+		
+		drawingContext.arc(points[i].xCenter, points[i].yCenter, points[i].radius, points[i].startAngle, points[i].endAngle, points[i].counterclockwise);
+		console.log(i);
+		drawingContext.closePath();
+		drawingContext.stroke();
+		drawingContext.fill();
+	}
+	console.log(points);
+}
+
+function clearPoints(){
+
+	drawingContext.fillStyle = "#FAEB96";
+	drawingContext.strokeStyle = "#FAEB96";
+	drawingContext.lineWidth = 1;
+	//var radius = 0.0 * size;
+
+	for(var i=0; i<114; i++){
+
+		drawingContext.beginPath();
+		
+		drawingContext.arc(points[i].xCenter, points[i].yCenter, points[i].radius, points[i].startAngle, points[i].endAngle, points[i].counterclockwise);
+		console.log(i);
+		drawingContext.closePath();
+		drawingContext.stroke();
+		drawingContext.fill();	
+
+	}
+	console.log(points);
+
+
+	
 }
 
 CatanMap.prototype.resize = function() {
