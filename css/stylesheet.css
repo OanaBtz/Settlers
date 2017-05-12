@@ -1,7 +1,14 @@
 
+body, html, canvas {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+}
+
 #gen-map-button{
     height: 10%;
-    padding: 14px 40px;
+    padding: 14px 14px;
     border-radius: 12px;
     border: 3px solid #4caf50;
     margin-top: 0.5em;
@@ -27,7 +34,7 @@
 
 #content-left { /* THE MAP*/
     margin-right: 300px;
-    height: 100%;
+    height: 88%;
     /*width: 60%;*/
 
 }
@@ -63,49 +70,12 @@ canvas#map-canvas {
     background-repeat: no-repeat;*/
 }
 
-body, html, canvas {
-    margin: 0;
-    padding: 0;
-    width: 100%;
-    height: 100%;
+input{
+  width:73%;
 }
 
-/*******************************************/
-/*
 
-form { 
-        display: flex;
-        justify-content: flex-end;
-        background: black; 
-        position: fixed; 
-      }
-      form input { 
-        border: 1px; 
-        width: 50%; 
-        height: 20px;
-        background-color: chocolate;
-      }
-      form button { 
-        border: 1px; 
-        height: 20px;
-        background: rgb(255, 189, 130);
-      }
-      #messages { 
-        position: fixed;
-        top:0;
-        left: 20%;
-        border:1px;
-        list-style-type: none; 
-        margin: 0; 
-        padding: 0; 
-      }
-      #messages li { 
-        padding: 5px 10px; 
-      }
-      #messages li:nth-child(odd) { 
-        background: #eee; 
-      }
-*/
+/***************************************************************/
 @import url(http://weloveiconfonts.com/api/?family=typicons);
 [class*="typicons-"]:before {
     font-family: 'Typicons', sans-serif;
@@ -113,6 +83,10 @@ form {
 
 .module {
     width: 100%;
+    height: 80%;
+    overflow-x: hidden;
+    overflow-y: auto;
+    background: #e5e5e5;
     /*margin: 20px auto;*/
 }
 
@@ -166,10 +140,9 @@ form {
 
 .discussion {
     list-style: none;
-    background: #e5e5e5;
     margin: 0;
     padding: 0 0 50px 0;
-    height: 90%;
+    position: relative; 
 }
 
 .discussion li {
@@ -203,6 +176,7 @@ form {
 .self {
     justify-content: flex-end;
     align-items: flex-end;
+
 }
 
 .self .messages {

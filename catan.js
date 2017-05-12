@@ -625,14 +625,23 @@ CanvasRenderingContext2D.prototype.clear =
 //**************************CHAT*****************************
 
 $(function () {
-            var socket = io();
-            $('form').submit(function(){
-                socket.emit('chat message', $('#m').val());
-                $('#m').val('');
-                return false;
-            });
+        var socket = io();
+
+        $('form').submit(function(){
+            socket.emit('chat message', $('#m').val());
+            var msg= $('#m').val();
+     
+            var img = '<img src="images/girl.png"/>';
+        	$('.discussion').append($('<li class="self"> <div class="avatar"> '+img+' </div> <div class="messages">'+'<p>'+msg+'</p>'));
+    		$('#m').val('');
+            return false;
+        });
         socket.on('chat message', function(msg){
-            $('.messages').append($('<p>').text(msg));
+        		
+
+        	var img = '<img src="images/girl.png"/>';
+        	$('.discussion').append($('<li class="other"> <div class="avatar"> '+img+' </div> <div class="messages">'+'<p>'+msg+'</p>'));
+        	
         });
 
 });
