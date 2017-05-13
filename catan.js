@@ -322,6 +322,7 @@ CatanMap.prototype.draw = function() {
 			this.hexTiles[i].draw();
 		}
 	}
+	clearPoints();
 	
 }
 
@@ -337,6 +338,7 @@ HexTile.prototype.draw = function() {
 		this.drawNumber();
 	}
 	this.findPoints();
+
 }
 
 function Road(ax,ay,bx,by){
@@ -477,7 +479,7 @@ HexTile.prototype.findPoints = function(){
 			
 			points.push(newPoint);
 		
-		}	
+		}
 }
 
 
@@ -520,8 +522,6 @@ function clearPoints(){
 	}
 	console.log(points);
 
-
-	
 }
 
 CatanMap.prototype.resize = function() {
