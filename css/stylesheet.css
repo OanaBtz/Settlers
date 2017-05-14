@@ -66,8 +66,10 @@ button#gen-map-button {
 canvas#map-canvas {
     width: 100%;
     height: 100%;
-    background-image: url("../images/ODRAR10.jpg");
+    /*background-image: url("../images/cover.jpg");*/
     background-repeat: no-repeat;
+    background-position: center;
+    background-size: 100%;
 }
 
 input{

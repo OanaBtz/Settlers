@@ -445,18 +445,83 @@ HexTile.prototype.drawNumber = function () {
 
 }
 
-function Point(xCenter, yCenter, radius, startAngle, endAngle, counterclockwise){
+
+
+// calc the mouseclick position and test if it's inside the rect
+function handleMouseDown(event){
+	console.log("i`m here!");
+	
+	var canvasOffset=$("#map-canvas").offset();
+	var offsetX=canvasOffset.left;
+	var offsetY=canvasOffset.top;
+    // calculate the mouse click position
+    mouseX=parseInt(event.clientX-offsetX);
+    mouseY=parseInt(event.clientY-offsetY);
+
+    // test myRedRect to see if the click was inside
+    //console.log(points[1]);
+	
+    for(var i=0;i<114;i++){
+    
+    
+    	if(points[i].isPointInside(mouseX,mouseY) && points[i].onbuild==true){
+    		console.log(points[i]);
+        	// we (finally!) execute the code!
+        	points[i].setBuilding("house");
+        	console.log(points[i]+" the first point");	
+        	drawHause(points[i].xCenter, points[i].yCenter);
+        	x=points[i].xCenter;
+        	y=points[i].yCenter;
+        }
+    } 
+    clearPoints(); 
+    
+}
+
+function drawHause(x,y){
+	drawingContext.fillStyle="#42f480";
+    drawingContext.strokeStyle="#0a3d21";
+    drawingContext.lineWidth="2";
+    //drawingContext.save();
+    //Draw a triangle for the roof
+    drawingContext.beginPath();
+    drawingContext.moveTo(x-10, y);
+    drawingContext.lineTo(x, y-7.5);
+    drawingContext.lineTo(x+10, y);
+    drawingContext.closePath();
+    drawingContext.fill();
+    drawingContext.stroke();
+
+    drawingContext.beginPath();
+    drawingContext.rect(x-7.5, y, 15, 10);
+    drawingContext.closePath();
+    drawingContext.fill();
+    drawingContext.stroke();
+}
+
+function Point(xCenter, yCenter, radius, startAngle, endAngle, counterclockwise, building, onbuild){
 	this.xCenter = xCenter;
 	this.yCenter = yCenter;
 	this.radius = radius;
 	this.startAngle = startAngle;
 	this.endAngle = endAngle;
 	this.counterclockwise = counterclockwise;
+	this.building = null;
+	this.onbuild = onbuild;
 }
 
+Point.prototype.isPointInside = function(x,y){
+    var dx = this.xCenter-x;
+    var dy = this.yCenter-y;
+    return( dx*dx+dy*dy <= this.radius*this.radius );
+}
 
-
-
+Point.prototype.setBuilding = function( building ){
+	this.building = building;
+}
+Point.prototype.setOnBuild = function(onbuild){
+	this.onbuild = onbuild;
+}
 
 HexTile.prototype.findPoints = function(){
 
@@ -465,6 +530,8 @@ HexTile.prototype.findPoints = function(){
 	var startAngle = 0;
 	var endAngle = 2*Math.PI;
 	var counterclockwise = false;
+	var building = null;
+	var onbuild = false;
 
 		var newAngle;
 		for (var i = 1; i <= 11; i +=2 ) {
@@ -473,7 +540,7 @@ HexTile.prototype.findPoints = function(){
 			var xCenter = this.xCenter + size * Math.sin(newAngle);
 			var yCenter = this.yCenter - size * Math.cos(newAngle);
 
-			var newPoint = new Point(xCenter, yCenter, radius, startAngle, endAngle, counterclockwise);
+			var newPoint = new Point(xCenter, yCenter, radius, startAngle, endAngle, counterclockwise, building, onbuild);
 			
 			pointsArray.push(newPoint);
 			
@@ -490,16 +557,19 @@ function drawPoints(){
 	drawingContext.lineWidth = 1;
 
 	for(var i=0; i<114; i++){
-	
-		drawingContext.beginPath();
+		if(points[i].building == null){
+			drawingContext.beginPath();
 		
-		drawingContext.arc(points[i].xCenter, points[i].yCenter, points[i].radius, points[i].startAngle, points[i].endAngle, points[i].counterclockwise);
-		console.log(i);
-		drawingContext.closePath();
-		drawingContext.stroke();
-		drawingContext.fill();
+			drawingContext.arc(points[i].xCenter, points[i].yCenter, points[i].radius, points[i].startAngle, points[i].endAngle, points[i].counterclockwise);
+			drawingContext.closePath();
+			drawingContext.stroke();
+			drawingContext.fill();
+			points[i].setOnBuild(true);
+		}
+		
+		
 	}
-	console.log(points);
+	//console.log(points);
 }
 
 function clearPoints(){
@@ -510,17 +580,18 @@ function clearPoints(){
 	//var radius = 0.0 * size;
 
 	for(var i=0; i<114; i++){
-
-		drawingContext.beginPath();
+		if(points[i].building == null){
+			drawingContext.beginPath();
 		
-		drawingContext.arc(points[i].xCenter, points[i].yCenter, points[i].radius, points[i].startAngle, points[i].endAngle, points[i].counterclockwise);
-		console.log(i);
-		drawingContext.closePath();
-		drawingContext.stroke();
-		drawingContext.fill();	
-
+			drawingContext.arc(points[i].xCenter, points[i].yCenter, points[i].radius, points[i].startAngle, points[i].endAngle, points[i].counterclockwise);
+			//console.log(i);
+			drawingContext.closePath();
+			drawingContext.stroke();
+			drawingContext.fill();	
+			points[i].setOnBuild(false);
+		}
 	}
-	console.log(points);
+	//console.log(points);
 
 }
 
