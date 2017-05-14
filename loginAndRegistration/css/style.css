@@ -1,14 +1,27 @@
-.login-details {
-  display: flex;
-  width: 50%;
-  height: 40%;
-  background-color: #d3d3d3;
-  justify-content: center;
-  vertical-align: center; }
-
 body {
   display: flex;
-  background-color: black;
-  justify-content: center; }
+  background-color: black; }
+
+.login-details {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  background-color: #d3d3d3;
+  justify-content: center;
+  flex-flow: column; }
+
+.container {
+  background-color: white;
+  width: 60%;
+  height: 40%;
+  margin: auto;
+  align-self: center; }
+
+button {
+  width: 5em;
+  height: 2em; }
+
+input {
+  width: 60%; }
 
 /*# sourceMappingURL=style.css.map */

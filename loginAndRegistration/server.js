@@ -3,7 +3,7 @@ var app = express();
 var mongo = require("mongodb").MongoClient;
 
 var sUrl = "mongodb://localhost:27017/game";
-
+var ajRooms = [{"name":"example","numberPlayers":3,"type":"Private","password":"pass","time":"19:23"},{"name":"example","numberPlayers":3,"type":"Private","password":"pass","time":"19:23"}];
 
 app.use(express.static(__dirname+"/"));
 
@@ -16,7 +16,7 @@ mongo.connect(sUrl, function(error, oDb){
 //Create the sockets server
 var server = require("http").Server(app);
 var io = require("socket.io")(server);
-
+var date = new Date();
 
 
 
@@ -31,7 +31,14 @@ app.get("/register", function(req, res){
 
 app.get("/success", function(req, res){
 	res.sendFile(__dirname+"/success.html");
-})
+});
+
+app.get("/room-list", function(req, res){
+	res.sendFile(__dirname+"/roomList.html");
+});
+
+
+
 
 io.on("connection", function(oSocket){
 	console.log("A client connected.");
@@ -58,6 +65,17 @@ io.on("connection", function(oSocket){
 					oSocket.emit("ok",{});
 			});
 		});
+	});
+	oSocket.on("room list", function(jData){
+		console.log("Room list requested, sending...");
+		oSocket.emit("room list", {ajRooms});
+	});
+	oSocket.on("create", function(jData){
+		console.log("creating new room made by "+jData.name);
+		if(jData.pass=="")
+			ajRooms.push({"name":jData.name,"numberPlayers":1,"type":"Public"});
+		else
+			ajRooms.push({"name":jData.name,"numberPlayers":1,"type":"Private","password":jData.pass});
 	});
 });
 

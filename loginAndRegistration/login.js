@@ -5,7 +5,7 @@ $(document).ready(function(e){
 		var sPass = $("#pass").val();
 		socket.emit("login", {"name":sName,"password":sPass});
 		socket.on("ok", function(jData){
-			window.location.href = "/success";	
+			window.location.href = "/roomList";	
 		});
 	});
 	$("#btnRegister").click(function(){
