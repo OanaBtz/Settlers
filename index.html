@@ -75,7 +75,7 @@
         </button>
     </div>
     <div id="content-left">
-        <div id="map-container">
+        <div id="map-container" onclick="handleMouseDown(event)">
 
         </div>
     </div>
@@ -101,9 +101,9 @@
             <img src="images/devCard.png">
         </div>
         <div id="houses" class="center-items">
-            <img src="images/logos/house.png">
-            <img src="images/logos/castle.png">
-            <img src="images/logos/road.png">
+            <button class="build" id="house" onclick="drawPoints()"> <img src="images/logos/house.png"> </button>
+            <button class="build" id="castle" onclick="clearPoints()"><img src="images/logos/castle.png"> </button>
+            <button class="build" id="road"><img src="images/logos/road.png"> </button>
         </div>
     </div>
 </div>
