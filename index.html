@@ -3,15 +3,6 @@
 <head>
     <title>Catan</title>
     <link rel="stylesheet" href="css/stylesheet.css" type="text/css">
-    <script src="jquery.min.js" type="text/javascript"></script>
-    <script type="text/javascript" language="javascript">
-        $(document).ready(function () {
-            init();
-        });
-    </script>
-    <script src="catan.js" type="text/javascript"></script>
-    <script src="/socket.io/socket.io.js"></script>
-    <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
 </head>
 
 <body>
@@ -29,33 +20,7 @@
             </header>
 
             <ol class="discussion">
-                <!-- <li class="other">
-                    <div class="avatar">
-                        <img src="images/boy.png"/>
-                    </div>
-                    <div class="messages">
-                        <p>bla bla bla</p>
-                        <time datetime="2009-11-13T20:00">Timothy - 51 min</time>
-                    </div>
-                </li> -->
-                <!-- <li class="self"> -->
-                    <!-- <div class="avatar">
-                        <img src="images/girl.png"/>
-                    </div>
-                    <div class="messages">
-                        <!-- <p></p> -->
-                        <!-- <time datetime="2009-11-13T20:14">Timothy - 37 mins</time> 
-                    </div> -->
-                <!-- </li> -->
-                <!-- <li class="other">
-                    <div class="avatar">
-                        <img src="images/boy.png"/>
-                    </div>
-                    <div class="messages">
-                        <p>that mongodb thing looks good, huh?</p>
-                        <p>tiny master db, and huge document store</p>
-                    </div>
-                </li> -->
+                
             </ol>
             
         </section>
@@ -65,11 +30,7 @@
     	</form>  
 
 
-        <!-- <ul id="messages"></ul>
-        <form action="">
-              <input id="m" autocomplete="off">
-             <button type="submit">Send</button>
-        </form> -->
+    
         <button id="gen-map-button" type="button" disabled="true">
             Loading resources...
         </button>
@@ -101,12 +62,22 @@
             <img src="images/devCard.png">
         </div>
         <div id="houses" class="center-items">
-            <button class="build" id="house" onclick="drawPoints()"> <img src="images/logos/house.png"> </button>
-            <button class="build" id="castle" onclick="clearPoints()"><img src="images/logos/castle.png"> </button>
+            <button class="build" id="house" onclick="placeHause()"> <img src="images/logos/house.png"> </button>
+            <button class="build" id="castle" onclick="placeCity()"><img src="images/logos/castle.png"> </button>
             <button class="build" id="road"><img src="images/logos/road.png"> </button>
         </div>
     </div>
 </div>
 </body>
+
+<script src="jquery.min.js" type="text/javascript"></script>
+<script type="text/javascript" language="javascript">
+    $(document).ready(function () {
+        init();
+    });
+</script>
+<script src="catan.js" type="text/javascript"></script>
+<script src="/socket.io/socket.io.js"></script>
+<script src="https://code.jquery.com/jquery-1.11.1.js"></script>
 
 </html>
