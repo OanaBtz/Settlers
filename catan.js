@@ -464,19 +464,29 @@ function handleMouseDown(event){
     for(var i=0;i<114;i++){
     
     
-    	if(points[i].isPointInside(mouseX,mouseY) && points[i].onbuild==true){
+    	if(points[i].isPointInside(mouseX,mouseY) && points[i].building==null && points[i].onbuild==true){
     		console.log(points[i]);
         	// we (finally!) execute the code!
         	points[i].setBuilding("house");
         	console.log(points[i]+" the first point");	
         	drawHause(points[i].xCenter, points[i].yCenter);
+
+        	x=points[i].xCenter;
+        	y=points[i].yCenter;
+        }else if(points[i].isPointInside(mouseX,mouseY) && points[i].building=="house" && points[i].onbuild==true){
+        	console.log(points[i]);
+        	// we (finally!) execute the code!
+        	points[i].setBuilding("city");
+        	console.log(points[i]+" the first point");	
+        	drawCity(points[i].xCenter, points[i].yCenter);
         	x=points[i].xCenter;
         	y=points[i].yCenter;
         }
+
     } 
-    clearPoints(); 
-    
+    clearPoints();  
 }
+
 
 function drawHause(x,y){
 	drawingContext.fillStyle="#42f480";
@@ -498,6 +508,35 @@ function drawHause(x,y){
     drawingContext.fill();
     drawingContext.stroke();
 }
+
+
+function drawCity(x,y){
+	drawingContext.fillStyle="#42f480";
+    drawingContext.strokeStyle="#0a3d21";
+    drawingContext.lineWidth="2";
+
+    drawingContext.beginPath();
+    drawingContext.rect(x-10, y-10, 20, 20);
+    drawingContext.closePath();
+
+    drawingContext.fill();
+    drawingContext.stroke();
+
+    drawingContext.beginPath();
+    drawingContext.rect(x-15, y-5, 10, 15);
+    drawingContext.closePath();
+
+	drawingContext.fill();
+    drawingContext.stroke();
+
+    drawingContext.beginPath();
+    drawingContext.rect(x+7.5, y, 8, 10);
+    drawingContext.closePath();
+
+    drawingContext.fill();
+    drawingContext.stroke();
+}
+
 
 function Point(xCenter, yCenter, radius, startAngle, endAngle, counterclockwise, building, onbuild){
 	this.xCenter = xCenter;
@@ -550,14 +589,16 @@ HexTile.prototype.findPoints = function(){
 }
 
 
-function drawPoints(){
+function placeHause(){
 
+	clearPoints();
 	drawingContext.fillStyle = "#adebad";
 	drawingContext.strokeStyle = "#33cc33";
 	drawingContext.lineWidth = 1;
 
 	for(var i=0; i<114; i++){
 		if(points[i].building == null){
+			
 			drawingContext.beginPath();
 		
 			drawingContext.arc(points[i].xCenter, points[i].yCenter, points[i].radius, points[i].startAngle, points[i].endAngle, points[i].counterclockwise);
@@ -565,9 +606,18 @@ function drawPoints(){
 			drawingContext.stroke();
 			drawingContext.fill();
 			points[i].setOnBuild(true);
-		}
-		
-		
+
+		}	
+	}
+	//console.log(points);
+}
+
+function placeCity(){
+	clearPoints();
+	for(var i=0; i<114; i++){
+		if(points[i].building == "house"){
+			points[i].setOnBuild(true);
+		}	
 	}
 	//console.log(points);
 }
@@ -590,6 +640,7 @@ function clearPoints(){
 			drawingContext.fill();	
 			points[i].setOnBuild(false);
 		}
+		points[i].setOnBuild(false);
 	}
 	//console.log(points);
 
