@@ -68,7 +68,7 @@ io.on("connection", function(oSocket){
 	});
 	oSocket.on("room list", function(jData){
 		console.log("Room list requested, sending...");
-		oSocket.emit("room list", {ajRooms});
+		io.emit("room list", {ajRooms});
 	});
 	oSocket.on("create", function(jData){
 		console.log("creating new room made by "+jData.name);
