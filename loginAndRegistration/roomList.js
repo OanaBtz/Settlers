@@ -20,6 +20,8 @@ $(document).ready(function(e){
 	        createDiv.style.display = 'none';
 	    	socket.emit("create", {"name":$("#name").val(),"pass":$("#password").val()});
 	    	socket.emit("room list", {});
+	    	$("input").val('');
+
 	    	// socket.emit("Join", {"user":user, "room":room});	
 	    }
 	});
