@@ -469,7 +469,7 @@ function handleMouseDown(event){
         	// we (finally!) execute the code!
         	points[i].setBuilding("house");
         	console.log(points[i]+" the first point");	
-        	drawHause(points[i].xCenter, points[i].yCenter);
+        	drawHause(points[i].xCenter, points[i].yCenter, points[i].radius);
 
         	x=points[i].xCenter;
         	y=points[i].yCenter;
@@ -478,7 +478,7 @@ function handleMouseDown(event){
         	// we (finally!) execute the code!
         	points[i].setBuilding("city");
         	console.log(points[i]+" the first point");	
-        	drawCity(points[i].xCenter, points[i].yCenter);
+        	drawCity(points[i].xCenter, points[i].yCenter, points[i].radius);
         	x=points[i].xCenter;
         	y=points[i].yCenter;
         }
@@ -488,49 +488,49 @@ function handleMouseDown(event){
 }
 
 
-function drawHause(x,y){
+function drawHause(x,y,r){
 	drawingContext.fillStyle="#42f480";
     drawingContext.strokeStyle="#0a3d21";
     drawingContext.lineWidth="2";
     //drawingContext.save();
     //Draw a triangle for the roof
     drawingContext.beginPath();
-    drawingContext.moveTo(x-10, y);
-    drawingContext.lineTo(x, y-7.5);
-    drawingContext.lineTo(x+10, y);
+    drawingContext.moveTo(x-r-(r/2), y);
+    drawingContext.lineTo(x, y-r-(r/2));
+    drawingContext.lineTo(x+r+(r/2), y);
     drawingContext.closePath();
     drawingContext.fill();
     drawingContext.stroke();
 
     drawingContext.beginPath();
-    drawingContext.rect(x-7.5, y, 15, 10);
+    drawingContext.rect(x-r, y, 2*r, r);
     drawingContext.closePath();
     drawingContext.fill();
     drawingContext.stroke();
 }
 
 
-function drawCity(x,y){
+function drawCity(x,y,r){
 	drawingContext.fillStyle="#42f480";
     drawingContext.strokeStyle="#0a3d21";
     drawingContext.lineWidth="2";
 
     drawingContext.beginPath();
-    drawingContext.rect(x-10, y-10, 20, 20);
+    drawingContext.rect(x-r-(r/2), y-r-(r/2), 2.5*r, 2.5*r);
     drawingContext.closePath();
 
     drawingContext.fill();
     drawingContext.stroke();
 
     drawingContext.beginPath();
-    drawingContext.rect(x-15, y-5, 10, 15);
+    drawingContext.rect(x-2*r, y-r+(r/2), r, r+(r/2));
     drawingContext.closePath();
 
 	drawingContext.fill();
     drawingContext.stroke();
 
     drawingContext.beginPath();
-    drawingContext.rect(x+7.5, y, 8, 10);
+    drawingContext.rect(x+r-(r/2), y-r/2, r+(r/2), r+(r/2));
     drawingContext.closePath();
 
     drawingContext.fill();
