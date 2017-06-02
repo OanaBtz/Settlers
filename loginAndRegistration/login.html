@@ -5,12 +5,21 @@
 	<link rel="stylesheet" type="text/css" href="/css/style.css">
 </head>
 <body>
-	<div class="container">
+	<div class="container" id="loginDiv">
 		<div class="login-details">
 			<label>Username</label><input type="text" id="name"><br>
 			<label>Password</label><input type="password" id="pass"><br>
 			<button id="btnLog">Login</button><br>
 			<button id="btnRegister">Register</button>
+		</div>
+	</div>
+	<div class="container" id="registerDiv">
+		<div class="login-details">
+			<label>Username</label><input type="text" id="nameReg"><br>
+			<label>Password</label><input type="password" id="passReg"><br>
+			<!-- <input type="password" id="confirmpass"> -->
+			<button id="btnSave">Save</button><br>
+			<button id="back">Back</button>
 		</div>
 	</div>
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
