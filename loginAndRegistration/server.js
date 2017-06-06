@@ -58,7 +58,7 @@ app.get("/room-list", function(req, res){
 	        res.locals.user = user;
 	 
 	        // render the dashboard page
-	        res.render('dashboard.jade');
+	        res.render('/room-list');
 	      }
 	    });
 	}else {

@@ -1,14 +1,11 @@
-var socket = io("localhost:10059");
 $(document).ready(function(e){
 	$("#btnLog").click(function(){
 		var sName = $("#name").val();
 		var sPass = $("#pass").val();
 		$.ajax({
 		  type: "POST",
-		  url: "localhost:10059/login",
-		  data: {"name":sName,"password":sPass},
-		  success: success,
-		  dataType: dataType
+		  url: "login",
+		  data: {"name":sName,"password":sPass}
 		});
 		// socket.emit("login", {"name":sName,"password":sPass});
 		// socket.on("ok", function(jData){
@@ -22,8 +19,12 @@ $(document).ready(function(e){
 		  type: "POST",
 		  url: "localhost:10059/register",
 		  data: {"name":sName,"password":sPass},
-		  success: success,
-		  dataType: dataType
+		  success: function(){
+        		sName = $("#nameReg").val("");
+				sPass = $("#passReg").val("");
+				loginDiv.style.display = 'block';
+	    		registerDiv.style.display = 'none';
+    			}
 		});
 	});
 	var loginDiv = document.getElementById('loginDiv');
