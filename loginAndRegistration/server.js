@@ -58,7 +58,7 @@ app.get("/room-list", function(req, res){
 	        res.locals.user = user;
 	 
 	        // render the dashboard page
-	        res.render('/room-list');
+	        res.sendFile(__dirname+'/room-list');
 	      }
 	    });
 	}else {
@@ -144,13 +144,13 @@ app.use(express.static(__dirname+"/"));
 // 		console.log("Room list requested, sending...");
 // 		io.emit("room list", {ajRooms});
 // 	});
-// 	oSocket.on("create", function(jData){
-// 		console.log("creating new room made by "+jData.name);
-// 		if(jData.pass=="")
-// 			ajRooms.push({"name":jData.name,"numberPlayers":1,"type":"Public"});
-// 		else
-// 			ajRooms.push({"name":jData.name,"numberPlayers":1,"type":"Private","password":jData.pass});
-// 	});
+	// oSocket.on("create", function(jData){
+	// 	console.log("creating new room made by "+jData.name);
+	// 	if(jData.pass=="")
+	// 		ajRooms.push({"name":jData.name,"numberPlayers":1,"type":"Public"});
+	// 	else
+	// 		ajRooms.push({"name":jData.name,"numberPlayers":1,"type":"Private","password":jData.pass});
+	// });
 // });
 
 

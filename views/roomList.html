@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Room List</title>
+</head>
+<body>
+	<table id="listTable">
+		<thead>
+			<tr>
+				<th>Room name</th>
+				<th>No. Players</th>
+				<th>Room Type</th>
+				<th>Time Created</th>
+			</tr>
+		</thead>
+		<tbody>
+			
+		</tbody>
+	</table>
+	<button id="create">Create Room</button>
+	<div id="createDiv">
+		<label>Name</label><br><input type="text" id="name"><br>
+		<label>Password</label><input type="checkbox" id="type">
+		<input type="text" id="password">
+	</div>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.7.3/socket.io.slim.min.js"></script>
+	<script src="/roomList.js"></script>
+</body>
+</html>
