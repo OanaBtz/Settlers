@@ -2,15 +2,17 @@
 <html>
 <head>
 	<title>Login</title>
-	<link rel="stylesheet" type="text/css" href="/css/style.css">
+	<link rel="stylesheet" type="text/css" href="./css/style.css">
 </head>
 <body>
 	<div class="container" id="loginDiv">
 		<div class="login-details">
 			<label>Username</label><input type="text" id="name"><br>
 			<label>Password</label><input type="password" id="pass"><br>
-			<button id="btnLog">Login</button><br>
-			<button id="btnRegister">Register</button>
+			<div class="buttons">
+				<button id="btnLog">Login</button>
+				<button id="btnRegister">Register</button>
+			</div>
 		</div>
 	</div>
 	<div class="container" id="registerDiv">
@@ -18,12 +20,17 @@
 			<label>Username</label><input type="text" id="nameReg"><br>
 			<label>Password</label><input type="password" id="passReg"><br>
 			<!-- <input type="password" id="confirmpass"> -->
-			<button id="btnSave">Save</button><br>
-			<button id="back">Back</button>
+			<div class="buttons">
+				<button id="btnSave">Save</button>
+				<button id="back">Back</button>
+			</div>
 		</div>
+	</div>
+	<div class="fire">
+		<img src="../images/fire.gif">
 	</div>
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.7.3/socket.io.slim.min.js"></script>
-	<script src="/login.js"></script>
+	<script src="./login.js"></script>
 </body>
 </html>
