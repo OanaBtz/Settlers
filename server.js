@@ -20,23 +20,22 @@ var ajRooms = [{"name":"example","numberPlayers":3,"type":"Private","password":"
 
 
 
-app.get('/', function (req, res) {if(req.session && req.session.user){
-		User.findOne({email:req.session.user.email}, function(err, user){
-			if(!user){
-				req.session.reset();
-				res.redirect('/login');
-			}
-			else{
-				res.locals.user=user;
-				res.locals.user = JSON.stringify(user);
-				console.log(res.locals.user);
-				res.sendFile(__dirname + '/index.html');
-			}
-		});
-	}else{
-		res.redirect('/login');
-	}
-    
+app.get('/', function (req, res) {
+	// if(req.session && req.session.user){
+	// 	User.findOne({email:req.session.user.email}, function(err, user){
+	// 		if(!user){
+	// 			req.session.reset();
+	// 			res.redirect('/login');
+	// 		}
+	// 		else{
+	// 			console.log(res.locals.user);
+	// 			res.sendFile(__dirname+"/index.html")
+	// 		}
+	// 	});
+	// }else{
+	// 	res.redirect('/login');
+	// }
+	res.sendFile(__dirname+"/index.html");
 });
 
 app.use(express.static(__dirname + '/'));
@@ -48,7 +47,7 @@ io.on('connection', function (socket) {
     });
 
     //room creation for room list
-    oSocket.on("create", function(jData){
+    socket.on("create", function(jData){
 		console.log("creating new room made by "+jData.name);
 		if(jData.pass=="")
 			ajRooms.push({"name":jData.name,"numberPlayers":1,"type":"Public"});
@@ -95,10 +94,10 @@ app.post("/register", function(req, res){
 			if(err.code==11000){
 				error="that email is already taken, try again";
 			}
-			res.sendFile(__dirname+"/views/register.html", {error:error});
+			res.sendFile(__dirname+"/views/register.html");
 		}
 		else
-			res.redirect('/dashboard');
+			res.redirect('/login');
 	});
 });
 
@@ -113,7 +112,7 @@ app.post("/login", function(req, res){
 		else
 			if(req.body.password==user.password){
 				req.session.user=user; //returns the cookie with the response
-				res.redirect('/dashboard');
+				res.redirect('/room-list');
 			}
 			else
 				res.send("Invalid email or password");
