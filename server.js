@@ -15,8 +15,14 @@ var User = mongoose.model("User", new Schema({
 	email: {type: String, unique: true},
 	password: String
 }));
+var Room = mongoose.model("Room", new Schema({
+	id: ObjectId,
+	roomName: String,
+	players: [],
+	password: String
+}));
 
-var ajRooms = [{"name":"example","numberPlayers":3,"type":"Private","password":"pass","time":"19:23"},{"name":"example","numberPlayers":3,"type":"Private","password":"pass","time":"19:23"}];
+var ajRooms = [];
 
 
 
@@ -46,15 +52,6 @@ io.on('connection', function (socket) {
         // io.emit('chat message', msg);
         socket.broadcast.emit('chat message', msg);
     });
-
-    //room creation for room list
-    socket.on("create", function(jData){
-		console.log("creating new room made by "+jData.name);
-		if(jData.pass=="")
-			ajRooms.push({"name":jData.name,"numberPlayers":1,"type":"Public"});
-		else
-			ajRooms.push({"name":jData.name,"numberPlayers":1,"type":"Private","password":jData.pass});
-	});
 });
 //io.emit('some event', { for: 'everyone' }); this sents a message to everyone
 
@@ -139,6 +136,52 @@ app.get("/room-list", function(req, res){
 		res.redirect('/login');
 	}
 });
+
+app.get("/all-rooms", function(req, res){
+	// if(req.session && req.session.user){
+	// 	User.findOne({email:req.session.user.email}, function(err, user){
+	// 		if(!user){console.log("User from session not found in database");}
+	// 		else{
+	// 			ajRooms=Room.find();
+	// 			res.JSON(ajRooms);
+	// 		}
+	// 	});
+	// }else{
+	// 	console.log("Session and/or session user not found");
+	// }
+	ajRooms=Room.find();
+	res.JSON(ajRooms);
+})
+
+app.post("/new-room", function(req, res){
+	var room = new Room({
+		roomName: req.body.roomName,
+		player1:[].push(req.session.user),
+		password:req.body.password
+	});
+	room.save(function(err){
+		if(err){
+			var err="something bad happened";
+			if(err.code==11000){
+				error="that email is already taken, try again";
+			}
+			res.sendFile(__dirname+"/views/register.html");
+		}
+		else
+			res.redirect('/login');
+	});
+});
+
+app.get("/joinRoom/:id", function(req, res){
+	var room = Room.findById(req.params.id);
+	room.players.push(req.session.user);
+	Room.findByIdAndUpdate(room.id, room);
+});
+
+app.get("/room/:id", function(req, res){
+	res.sendFile("index.html");
+});
+
 
 app.get("/logout", function(req, res){
 	req.session.reset();
