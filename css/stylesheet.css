@@ -1,18 +1,14 @@
-#content-bottom {
-    background: #ffe6cc;
-    height: 12vh;
-    display: flex;
-    justify-content: space-between;
-}
 
-#houses img {
-    height: 10vh;
-    width: 7vw;
-    margin-right: 8px;
+body, html, canvas {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
 }
 
 #gen-map-button{
-    padding: 14px 40px;
+    height: 10%;
+    padding: 14px 14px;
     border-radius: 12px;
     border: 3px solid #4caf50;
     margin-top: 0.5em;
@@ -29,39 +25,6 @@
     transform: translateY(7px);
 }
 
-.victory-development {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: space-around;
-}
-
-.victory-development img {
-    height: 9vh;
-    width: 4vw;
-}
-
-.center-items{
-    display: flex;
-    align-items: center;
-}
-
-#resources label{
-    margin-right: 8px;
-}
-
-#resources img {
-    height: 9vh;
-    width: 5vw;
-}
-
-label {
-    font-size: 190%;
-    color: #001a00;
-    font-family: "Times New Roman";
-    font-style: oblique;
-}
-
 #content-wrapper {
     width: 100%;
     height: 100%;
@@ -70,17 +33,20 @@ label {
 }
 
 #content-left { /* THE MAP*/
-    margin-right: 200px;
-    height: 90%;
-    /*width: 80%;*/
+    margin-right: 20%;
+    height: 88%;
+    /*width: 60%;*/
+
 }
 
 #content-right { /* THE CHAT */
+
     position: relative;
     text-align: center;
     float: right;
-    width: 200px;
+    width: 20%;
     height: 88vh;
+
 }
 
 #map-container {
@@ -92,6 +58,7 @@ button#gen-map-button {
     width: 150px;
 }
 
+
 #gen-options {
     padding: 20px 0px;
 }
@@ -99,53 +66,21 @@ button#gen-map-button {
 canvas#map-canvas {
     width: 100%;
     height: 100%;
-    /*background-image: url("../images/ODRAR10.jpg");
-    background-repeat: no-repeat;*/
+    /*background-image: url("../images/cover.jpg");*/
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 100%;
 }
 
-body, html, canvas {
-    margin: 0;
-    padding: 0;
-    width: 100%;
-    height: 100%;
+input{
+  width:73%;
 }
 
-/*******************************************/
-/*
+.build{
+  background-color: #FAEB96;
+}
 
-form { 
-        display: flex;
-        justify-content: flex-end;
-        background: black; 
-        position: fixed; 
-      }
-      form input { 
-        border: 1px; 
-        width: 50%; 
-        height: 20px;
-        background-color: chocolate;
-      }
-      form button { 
-        border: 1px; 
-        height: 20px;
-        background: rgb(255, 189, 130);
-      }
-      #messages { 
-        position: fixed;
-        top:0;
-        left: 20%;
-        border:1px;
-        list-style-type: none; 
-        margin: 0; 
-        padding: 0; 
-      }
-      #messages li { 
-        padding: 5px 10px; 
-      }
-      #messages li:nth-child(odd) { 
-        background: #eee; 
-      }
-*/
+/***************************************************************/
 @import url(http://weloveiconfonts.com/api/?family=typicons);
 [class*="typicons-"]:before {
     font-family: 'Typicons', sans-serif;
@@ -153,6 +88,10 @@ form {
 
 .module {
     width: 100%;
+    height: 80%;
+    overflow-x: hidden;
+    overflow-y: auto;
+    background: #e5e5e5;
     /*margin: 20px auto;*/
 }
 
@@ -206,10 +145,9 @@ form {
 
 .discussion {
     list-style: none;
-    background: #e5e5e5;
     margin: 0;
     padding: 0 0 50px 0;
-    height: 400px;
+    position: relative; 
 }
 
 .discussion li {
@@ -243,6 +181,7 @@ form {
 .self {
     justify-content: flex-end;
     align-items: flex-end;
+
 }
 
 .self .messages {
@@ -292,3 +231,56 @@ form {
         opacity: 0.2;
     }
 }
+
+
+@media screen and (max-width: 1920px){
+    label {
+        font-size: 2.1vw;
+        color: #001a00;
+        font-family: "Times New Roman";
+        font-style: oblique;
+    }
+    .victory-development {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: space-around;
+    }
+
+    .victory-development img {
+        height: 9vh;
+        width: 4vw;
+    }
+
+    .center-items{
+        display: flex;
+        align-items: center;
+    }
+
+    #resources label{
+        margin-right: 8px;
+    }
+
+    #resources img {
+        height: 9vh;
+        width: 5vw;
+    }
+    #content-bottom {
+        background: #ffe6cc;
+        height: 12vh;
+        display: flex;
+        justify-content: space-between;
+    }
+
+    #content-bottom label,img{
+        flex-shrink: 2;
+    }
+
+    #houses img {
+        height: 10vh;
+        width: 7vw;
+        margin-right: 8px;
+    }
+}
+
+

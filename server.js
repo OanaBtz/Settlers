@@ -44,6 +44,7 @@ io.on('connection', function (socket) {
 
     socket.on('chat message', function (msg) {
         io.emit('chat message', msg);
+        socket.broadcast.emit('chat message', msg);
     });
 
     //room creation for room list
@@ -56,6 +57,7 @@ io.on('connection', function (socket) {
 	});
 });
 //io.emit('some event', { for: 'everyone' }); this sents a message to everyone
+
 
 
 mongoose.connect("mongodb://localhost/newauth");
