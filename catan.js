@@ -79,17 +79,17 @@ map.coordinatesArray = [
 	[4,2],[4,0],[4,-2]
 ];
 
+//----------- Victory points and resources */
 
+var iVictoryPoints = 0,
+	hVictoryPoints = $('#points');
 
 //**********************Functions************************
 
 function init() {
 
     loadImages(function () {
-        var button = $('button#gen-map-button')[0];
-        $(button).click(generate);
-        button.disabled = false;
-        button.innerHTML = "Play new game";
+        generate();
     });
     addCanvas();
 }
@@ -460,7 +460,8 @@ function handleMouseDown(event){
 
     // test myRedRect to see if the click was inside
     //console.log(points[1]);
-	
+	var flag = false;
+
     for(var i=0;i<114;i++){
     
     
@@ -468,6 +469,7 @@ function handleMouseDown(event){
     		console.log(points[i]);
         	// we (finally!) execute the code!
         	points[i].setBuilding("house");
+			flag = true;
         	console.log(points[i]+" the first point");	
         	drawHause(points[i].xCenter, points[i].yCenter, points[i].radius);
 
@@ -477,6 +479,7 @@ function handleMouseDown(event){
         	console.log(points[i]);
         	// we (finally!) execute the code!
         	points[i].setBuilding("city");
+			flag = true;
         	console.log(points[i]+" the first point");	
         	drawCity(points[i].xCenter, points[i].yCenter, points[i].radius);
         	x=points[i].xCenter;
@@ -484,6 +487,11 @@ function handleMouseDown(event){
         }
 
     } 
+	if (flag){
+		iVictoryPoints++;
+		hVictoryPoints.text(iVictoryPoints);
+	}
+
     clearPoints();  
 }
 
