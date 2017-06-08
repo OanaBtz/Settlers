@@ -17,11 +17,19 @@
 			
 		</tbody>
 	</table>
+	<button id="refresh">Refresh</button>
 	<button id="create">Create Room</button>
 	<div id="createDiv">
-		<label>Name</label><br><input type="text" id="name"><br>
-		<label>Password</label><input type="checkbox" id="type">
-		<input type="text" id="password">
+		<form method="post" action>
+			<span>Name:</span>
+			<input type="text" id="name" required="true">
+			<br>
+
+			<span>Password:</span>
+			<input type="text" id="password"><input type="checkbox" id="type">
+
+			<button type="submit">Create</button>
+		</form>
 	</div>
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.7.3/socket.io.slim.min.js"></script>

@@ -24,26 +24,6 @@ var Room = mongoose.model("Room", new Schema({
 
 var ajRooms = [];
 
-
-
-app.get('/', function (req, res) {
-	// if(req.session && req.session.user){
-	// 	User.findOne({email:req.session.user.email}, function(err, user){
-	// 		if(!user){
-	// 			req.session.reset();
-	// 			res.redirect('/login');
-	// 		}
-	// 		else{
-	// 			console.log(res.locals.user);
-	// 			res.sendFile(__dirname+"/index.html")
-	// 		}
-	// 	});
-	// }else{
-	// 	res.redirect('/login');
-	// }
-	res.sendFile(__dirname+"/index.html");
-});
-
 app.use(express.static(__dirname + '/'));
 
 io.on('connection', function (socket) {
@@ -52,6 +32,8 @@ io.on('connection', function (socket) {
         io.emit('chat message', msg);
         socket.broadcast.emit('chat message', msg);
     });
+
+
 });
 //io.emit('some event', { for: 'everyone' }); this sents a message to everyone
 
@@ -70,11 +52,6 @@ app.use(session({
 	//how much it extends everytime you are close to finishing
 	activeDuration:5*60*1000
 }));
-
-
-app.get("/home", function(req, res){
-	res.sendFile(__dirname+"/views/index.html");
-});
 
 app.get("/register", function(req, res){
 	res.sendFile(__dirname+"/views/register.html");
@@ -96,7 +73,7 @@ app.post("/register", function(req, res){
 			res.sendFile(__dirname+"/views/register.html");
 		}
 		else
-			res.redirect('/login');
+			res.redirect('/');
 	});
 });
 
@@ -123,7 +100,7 @@ app.get("/room-list", function(req, res){
 		User.findOne({email:req.session.user.email}, function(err, user){
 			if(!user){
 				req.session.reset();
-				res.redirect('/login');
+				res.redirect('/');
 			}
 			else{
 				res.locals.user=user;
@@ -133,7 +110,7 @@ app.get("/room-list", function(req, res){
 			}
 		});
 	}else{
-		res.redirect('/login');
+		res.redirect('/');
 	}
 });
 
@@ -151,7 +128,7 @@ app.get("/all-rooms", function(req, res){
 	// }
 	ajRooms=Room.find();
 	res.JSON(ajRooms);
-})
+});
 
 app.post("/new-room", function(req, res){
 	var room = new Room({
@@ -168,24 +145,42 @@ app.post("/new-room", function(req, res){
 			res.sendFile(__dirname+"/views/register.html");
 		}
 		else
-			res.redirect('/login');
+			res.redirect('/');
 	});
+});
+
+app.get('/room', function (req, res) {
+	// if(req.session && req.session.user){
+	// 	User.findOne({email:req.session.user.email}, function(err, user){
+	// 		if(!user){
+	// 			req.session.reset();
+	// 			res.redirect('/login');
+	// 		}
+	// 		else{
+	// 			console.log(res.locals.user);
+	// 			res.sendFile(__dirname+"/index.html")
+	// 		}
+	// 	});
+	// }else{
+	// 	res.redirect('/login');
+	// }
+	res.sendFile(__dirname+"/index.html");
 });
 
 app.get("/joinRoom/:id", function(req, res){
 	var room = Room.findById(req.params.id);
 	room.players.push(req.session.user);
 	Room.findByIdAndUpdate(room.id, room);
+	res.redirect("/room/"+room.id);
 });
 
 app.get("/room/:id", function(req, res){
-	res.sendFile("index.html");
+	res.sendFile(__dirname+"/index.html");
 });
-
 
 app.get("/logout", function(req, res){
 	req.session.reset();
-	res.redirect("/login");
+	res.redirect("/");
 
 });
 http.listen(2000, function () {
