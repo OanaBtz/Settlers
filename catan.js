@@ -82,9 +82,20 @@ map.coordinatesArray = [
 //----------- Victory points and resources */
 
 var iVictoryPoints = 0,
-	hVictoryPoints = $('#points');
-
+	hVictoryPoints = $('#points'),
+	hDice1 = $('#dice1'),
+	hDice2 = $('#dice2'),
+	iRollSum;
 //**********************Functions************************
+
+function roll(){
+	var iDice1 = Math.floor(Math.random() * 6) + 1;
+	hDice1.text(iDice1);
+	var iDice2 = Math.floor(Math.random() * 6) + 1;
+	hDice2.text(iDice2);
+	iRollSum = iDice1 + iDice2;
+	console.log(iRollSum);
+}
 
 function init() {
 
