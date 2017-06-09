@@ -174,9 +174,20 @@ app.get("/joinRoom/:id", function(req, res){
 	res.redirect("/room/"+room.id);
 });
 
-app.get("/room/:id", function(req, res){
-	res.sendFile(__dirname+"/index.html");
-});
+app.get("/roomId", function(req, res){
+	if(req.session && req.session.user){
+		Room.find({players:req.session.user}, function(err, room){
+			if(!room){}
+			else{
+				res.send(room.id);
+			}
+		})
+	}else{}
+})
+
+// app.get("/room/:id", function(req, res){
+// 	res.sendFile(__dirname+"/index.html");
+// });
 
 app.get("/logout", function(req, res){
 	req.session.reset();
