@@ -1,4 +1,3 @@
-$('#instructions').hide;
 // ----- Canvas globals -----
 
 var mapCanvas;
@@ -88,12 +87,6 @@ var iVictoryPoints = 0,
 	hDice2 = $('#dice2'),
 	iRollSum;
 //**********************Functions************************
-
-function showInstructions(){
-	$('#seeI').click(function(){
-		$('#instructions').show;
-	});
-}
 
 function roll(){
 	var iDice1 = Math.floor(Math.random() * 6) + 1;
