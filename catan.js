@@ -1,4 +1,4 @@
-$('#instructions').hide;
+$('#instructions').hide();
 // ----- Canvas globals -----
 
 var mapCanvas;
@@ -91,7 +91,7 @@ var iVictoryPoints = 0,
 
 function showInstructions(){
 	$('#seeI').click(function(){
-		$('#instructions').show;
+		$('#instructions').show();
 	});
 }
 
