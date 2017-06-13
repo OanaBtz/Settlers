@@ -88,11 +88,22 @@ var iVictoryPoints = 0,
 	hDice1 = $('#dice1'),
 	hDice2 = $('#dice2'),
 	iRollSum;
-var iWood = $("#lblWood");
-var iBrick = $("#lblBrick");
-var iRock = $("#lblRock");
-var iGrain = $("#lblGrain");
-var iWool = $("#lblWool");
+var hWood = $("#lblWood");
+var iWood = 4;
+var hBrick = $("#lblBrick");
+var iBrick = 4;
+var hRock = $("#lblRock");
+var iRock = 0;
+var iGrain = 2;
+var hGrain = $("#lblGrain");
+var iWool = 2;
+var hWool = $("#lblWool");
+
+hWood.text(iWood);
+hWool.text(iWool);
+hRock.text(iRock);
+hGrain.text(iGrain);
+hBrick.text(iBrick);
 //**********************Functions************************
 
 function roll(){
@@ -101,6 +112,62 @@ function roll(){
 	var iDice2 = Math.floor(Math.random() * 6) + 1;
 	hDice2.text(iDice2);
 	iRollSum = iDice1 + iDice2;
+	for(var i=0;i<19;i++){
+		if(hexTiles[i].number==iRollSum){
+			for(var j=0;j<6;j++){
+				if(hexTiles[i].points[j].building == "house"){
+					if(hexTiles[i].resourceType == "clay"){
+						console.log(hexTiles[i].resourceType);
+						iBrick++;
+						hBrick.text(iBrick);
+					}
+					if(hexTiles[i].resourceType == "hay"){
+						console.log(hexTiles[i].resourceType);
+						iGrain++;
+						hGrain.text(iGrain);
+					}
+					if(hexTiles[i].resourceType == "ore"){
+						console.log(hexTiles[i].resourceType);
+						iRock++;
+						hRock.text(iRock);
+					}
+					if(hexTiles[i].resourceType == "wool"){
+						console.log(hexTiles[i].resourceType);
+						iWool++;
+						hWool.text(iWool);
+					}
+					if(hexTiles[i].resourceType == "wood"){
+						console.log(hexTiles[i].resourceType);
+						iWood++;
+						hWood.text(iWood);
+					}
+				}
+				else if(hexTiles[i].points[j].building == "city"){
+					if(hexTiles[i].resourceType == "clay"){
+						iBrick= iBrick+2;
+						$("#lblBrick").text(iBrick);
+					}
+					if(hexTiles[i].resourceType == "hay"){
+						iGrain= iGrain+2;
+						$("#lblGrain").text(iGrain);
+					}
+					if(hexTiles[i].resourceType == "ore"){
+						iRock=iRock+2;
+						$("#lblRock").text(iRock);
+					}
+					if(hexTiles[i].resourceType == "wool"){
+						iWool=iWool+2;
+						$("#lblWool").text(iWool);
+					}
+					if(hexTiles[i].resourceType == "wood"){
+						iWood=iWood+2;
+						$("#lblWood").text(iWood);
+					}
+				}
+			}
+			
+		}
+	}
 	console.log(iRollSum);
 }
 
@@ -480,21 +547,26 @@ function handleMouseDown(event){
     mouseX=parseInt(event.clientX-offsetX);
     mouseY=parseInt(event.clientY-offsetY);
 
-    // test myRedRect to see if the click was inside
-    //console.log(points[1]);
 	var flag = false;
 
+	console.log(hexTiles);
     for(var i=0; i<19; i++){
 		var hexTile = hexTiles[i];
 		for(var j=0;j<6;j++){
     
     	if(hexTile.points[j].isPointInside(mouseX,mouseY) && hexTile.points[j].building==null && hexTile.points[j].onbuild==true){
-        	hexTile.points[j].setBuilding("house");
-			flag = true;
-        	drawHause(hexTile.points[j].xCenter, hexTile.points[j].yCenter, hexTile.points[j].radius);
-        	console.log(hexTile.roads[j]);
-        	x=hexTile.points[j].xCenter;
-        	y=hexTile.points[j].yCenter;
+        	if(iBrick>=1 && iWood>=1 && iWool>=1 && iGrain>=1){
+        		hexTile.points[j].setBuilding("house");
+				flag = true;
+        		drawHause(hexTile.points[j].xCenter, hexTile.points[j].yCenter, hexTile.points[j].radius);
+        	
+        		x=hexTile.points[j].xCenter;
+        		y=hexTile.points[j].yCenter;
+        		iBrick--;
+        		iWool--;
+        		iWood--;
+        		iGrain--;
+        	}
         }else if(hexTile.points[j].isPointInside(mouseX,mouseY) && hexTile.points[j].building=="house" && hexTile.points[j].onbuild==true){
         	hexTile.points[j].setBuilding("city");
 			flag = true;
