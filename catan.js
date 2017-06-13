@@ -50,6 +50,8 @@ var dy = size * Math.sin(Math.PI/3);
 var catanMap = new CatanMap();
 var map = new MapDefinition();
 var points = [];
+var roads = [];
+var hexTiles = [];
 
 map.resources = {
 	"desert": 1,
@@ -217,6 +219,7 @@ CatanMap.prototype.generate = function() {
 		desertHexTile.setResourceType("desert");
 		//push the desert to the array
 		this.hexTiles.push(desertHexTile);
+		hexTiles.push(desertHexTile);
 		this.coordToTile[newCoords.toString()] = desertHexTile;
 		
 
@@ -267,6 +270,7 @@ CatanMap.prototype.generate = function() {
 			}
 			
 			this.hexTiles.push(newHexTile);
+			hexTiles.push(newHexTile);
 			this.coordToTile[newCoords.toString()] = newHexTile;
 		} // end for loop
 		
@@ -334,7 +338,6 @@ CatanMap.prototype.draw = function() {
 		}
 	}
 	clearPoints();
-	
 }
 
 
@@ -349,22 +352,28 @@ HexTile.prototype.draw = function() {
 		this.drawNumber();
 	}
 	this.findPoints();
-
+	this.findRoads();
 }
 
-function Road(ax,ay,bx,by){
+function Road(ax,ay,bx,by,onbuild,building){
 	this.ax = ax;
 	this.ay = ay;
 	this.bx = bx;
 	this.by = by;
-	this.strokeStyle = strokeStyle;
+	this.onbuild = onbuild;
+	this.building = building;
+}
+
+Road.prototype.setOnBuild = function(onbuild){
+	this.onbuild = onbuild;
+}
+Road.prototype.setBuilding = function(building){
+	this.building =building;
 }
 
 
-HexTile.prototype.drawBase = function() {
 
-	var roads = [];
-	
+HexTile.prototype.drawBase = function() {
 	if (mapStyle == "retro") {
 		drawingContext.lineWidth = 5;
 		drawingContext.fillStyle = "rgba(255,255,255,0)";
@@ -394,14 +403,11 @@ HexTile.prototype.drawBase = function() {
 		bx = this.xCenter + size * Math.sin(newAngle + angleOffset);
 		by = this.yCenter - size * Math.cos(newAngle + angleOffset);
 
-		drawingContext.lineTo (bx,by);
-	
-		var road = new Road(ax,bx,ay,by);
-		roads.push(road);
+		drawingContext.lineTo(bx,by);
+
 		ax=bx;
 		ay=by;
 	}
-	//console.log(roads);
 	drawingContext.closePath();
 	
 	if (mapStyle == "retro") {
@@ -424,6 +430,7 @@ HexTile.prototype.drawBase = function() {
 	drawingContext.stroke();
 	
 }
+
 HexTile.prototype.drawNumber = function () {
 
     drawingContext.fillStyle = "#FFFFFF";
@@ -460,7 +467,6 @@ HexTile.prototype.drawNumber = function () {
 
 // calc the mouseclick position and test if it's inside the rect
 function handleMouseDown(event){
-	console.log("i`m here!");
 	
 	var canvasOffset=$("#map-canvas").offset();
 	var offsetX=canvasOffset.left;
@@ -473,38 +479,30 @@ function handleMouseDown(event){
     //console.log(points[1]);
 	var flag = false;
 
-    for(var i=0;i<114;i++){
+    for(var i=0; i<19; i++){
+		var hexTile = hexTiles[i];
+		for(var j=0;j<6;j++){
     
-    
-    	if(points[i].isPointInside(mouseX,mouseY) && points[i].building==null && points[i].onbuild==true){
-    		console.log(points[i]);
-        	// we (finally!) execute the code!
-        	points[i].setBuilding("house");
+    	if(hexTile.points[j].isPointInside(mouseX,mouseY) && hexTile.points[j].building==null && hexTile.points[j].onbuild==true){
+        	hexTile.points[j].setBuilding("house");
 			flag = true;
-        	console.log(points[i]+" the first point");	
-<<<<<<< HEAD
-        	drawHause(points[i].xCenter, points[i].yCenter);
-=======
-        	drawHause(points[i].xCenter, points[i].yCenter, points[i].radius);
->>>>>>> 7690aeac92046632b67bf82541be0b123a57ed84
-
-        	x=points[i].xCenter;
-        	y=points[i].yCenter;
-        }else if(points[i].isPointInside(mouseX,mouseY) && points[i].building=="house" && points[i].onbuild==true){
-        	console.log(points[i]);
-        	// we (finally!) execute the code!
-        	points[i].setBuilding("city");
+        	drawHause(hexTile.points[j].xCenter, hexTile.points[j].yCenter, hexTile.points[j].radius);
+        	console.log(hexTile.roads[j]);
+        	x=hexTile.points[j].xCenter;
+        	y=hexTile.points[j].yCenter;
+        }else if(hexTile.points[j].isPointInside(mouseX,mouseY) && hexTile.points[j].building=="house" && hexTile.points[j].onbuild==true){
+        	hexTile.points[j].setBuilding("city");
 			flag = true;
-        	console.log(points[i]+" the first point");	
-<<<<<<< HEAD
-        	drawCity(points[i].xCenter, points[i].yCenter);
-=======
-        	drawCity(points[i].xCenter, points[i].yCenter, points[i].radius);
->>>>>>> 7690aeac92046632b67bf82541be0b123a57ed84
-        	x=points[i].xCenter;
-        	y=points[i].yCenter;
+        	drawCity(hexTile.points[j].xCenter, hexTile.points[j].yCenter, hexTile.points[j].radius);
+        	x=hexTile.points[j].xCenter;
+        	y=hexTile.points[j].yCenter;
         }
-
+        else if(hexTile.roads[j].isPointInside(mouseX,mouseY) && hexTile.roads[j].building==null && hexTile.roads[j].onbuild==true){
+        	console.log(mouseX+" "+mouseY+" "+hexTile.roads[j].ax+" "+hexTile.roads[j].ay+" "+hexTile.roads[j].bx+" "+hexTile.roads[j].by);
+        	hexTile.points[j].setBuilding("road");
+        	drawRoad(hexTile.roads[j].ax, hexTile.roads[j].ay, hexTile.roads[j].bx, hexTile.roads[j].by);
+        }
+    }
     } 
 	if (flag){
 		iVictoryPoints++;
@@ -515,11 +513,8 @@ function handleMouseDown(event){
 }
 
 
-<<<<<<< HEAD
-function drawHause(x,y){
-=======
+
 function drawHause(x,y,r){
->>>>>>> 7690aeac92046632b67bf82541be0b123a57ed84
 	drawingContext.fillStyle="#42f480";
     drawingContext.strokeStyle="#0a3d21";
     drawingContext.lineWidth="2";
@@ -541,49 +536,51 @@ function drawHause(x,y,r){
 }
 
 
-<<<<<<< HEAD
-function drawCity(x,y){
-=======
+
 function drawCity(x,y,r){
->>>>>>> 7690aeac92046632b67bf82541be0b123a57ed84
+
 	drawingContext.fillStyle="#42f480";
     drawingContext.strokeStyle="#0a3d21";
     drawingContext.lineWidth="2";
 
     drawingContext.beginPath();
-<<<<<<< HEAD
-    drawingContext.rect(x-10, y-10, 20, 20);
-=======
+
     drawingContext.rect(x-r-(r/2), y-r-(r/2), 2.5*r, 2.5*r);
->>>>>>> 7690aeac92046632b67bf82541be0b123a57ed84
     drawingContext.closePath();
 
     drawingContext.fill();
     drawingContext.stroke();
 
     drawingContext.beginPath();
-<<<<<<< HEAD
-    drawingContext.rect(x-15, y-5, 10, 15);
-=======
+
     drawingContext.rect(x-2*r, y-r+(r/2), r, r+(r/2));
->>>>>>> 7690aeac92046632b67bf82541be0b123a57ed84
     drawingContext.closePath();
 
 	drawingContext.fill();
     drawingContext.stroke();
 
     drawingContext.beginPath();
-<<<<<<< HEAD
-    drawingContext.rect(x+7.5, y, 8, 10);
-=======
+
     drawingContext.rect(x+r-(r/2), y-r/2, r+(r/2), r+(r/2));
->>>>>>> 7690aeac92046632b67bf82541be0b123a57ed84
     drawingContext.closePath();
 
     drawingContext.fill();
     drawingContext.stroke();
 }
 
+function drawRoad(ax,ay,bx,by){
+	drawingContext.fillStyle = "#adebad";
+	drawingContext.strokeStyle = "#f44268";
+	drawingContext.lineWidth = 3;
+	
+	drawingContext.beginPath();
+				
+	drawingContext.moveTo (ax,ay);
+	drawingContext.lineTo (bx,by);
+
+	drawingContext.closePath();
+	drawingContext.stroke();
+}
 
 function Point(xCenter, yCenter, radius, startAngle, endAngle, counterclockwise, building, onbuild){
 	this.xCenter = xCenter;
@@ -592,7 +589,7 @@ function Point(xCenter, yCenter, radius, startAngle, endAngle, counterclockwise,
 	this.startAngle = startAngle;
 	this.endAngle = endAngle;
 	this.counterclockwise = counterclockwise;
-	this.building = null;
+	this.building = building;
 	this.onbuild = onbuild;
 }
 
@@ -609,9 +606,15 @@ Point.prototype.setOnBuild = function(onbuild){
 	this.onbuild = onbuild;
 }
 
+Road.prototype.isPointInside = function(x, y){    	
+	if((x >= this.ax+0.5 && x <= this.ax-0.5) || (y >= this.ay+0.5 && y <= this.ay-0.5))
+    	return( true);
+    else
+    	return(false);
+}
+
 HexTile.prototype.findPoints = function(){
 
-	var pointsArray = [];
 	var radius = 0.140 * size;
 	var startAngle = 0;
 	var endAngle = 2*Math.PI;
@@ -628,11 +631,32 @@ HexTile.prototype.findPoints = function(){
 
 			var newPoint = new Point(xCenter, yCenter, radius, startAngle, endAngle, counterclockwise, building, onbuild);
 			
-			pointsArray.push(newPoint);
-			
-			points.push(newPoint);
+			this.points.push(newPoint);
+			//console.log(newPoint);
 		
 		}
+}
+
+HexTile.prototype.findRoads = function(){
+	
+	var angleOffset = Math.PI / 6;
+	var ax= this.xCenter + size * Math.sin(angleOffset);
+	var ay= this.yCenter - size * Math.cos(angleOffset);
+	
+	var bx;
+	var by;
+	var newAngle;
+	for (var i = 1; i <= 6; i ++) {
+		newAngle = i * Math.PI / 3;
+
+		bx = this.xCenter + size * Math.sin(newAngle + angleOffset);
+		by = this.yCenter - size * Math.cos(newAngle + angleOffset);
+	
+		var road = new Road(ax,ay,bx,by,false,null);
+		this.roads.push(road);
+		ax=bx;
+		ay=by;
+	}
 }
 
 
@@ -643,17 +667,20 @@ function placeHause(){
 	drawingContext.strokeStyle = "#33cc33";
 	drawingContext.lineWidth = 1;
 
-	for(var i=0; i<114; i++){
-		if(points[i].building == null){
+	for(var i=0; i<19; i++){
+		var hexTile = hexTiles[i];
+		for(var j=0;j<6;j++){
+			if(hexTile.points[j].building == null){
 			
-			drawingContext.beginPath();
+				drawingContext.beginPath();
 		
-			drawingContext.arc(points[i].xCenter, points[i].yCenter, points[i].radius, points[i].startAngle, points[i].endAngle, points[i].counterclockwise);
-			drawingContext.closePath();
-			drawingContext.stroke();
-			drawingContext.fill();
-			points[i].setOnBuild(true);
+				drawingContext.arc(hexTile.points[j].xCenter, hexTile.points[j].yCenter, hexTile.points[j].radius, hexTile.points[j].startAngle, hexTile.points[j].endAngle, hexTile.points[j].counterclockwise);
+				drawingContext.closePath();
+				drawingContext.stroke();
+				drawingContext.fill();
+				hexTile.points[j].setOnBuild(true);
 
+			}
 		}	
 	}
 	//console.log(points);
@@ -661,12 +688,46 @@ function placeHause(){
 
 function placeCity(){
 	clearPoints();
-	for(var i=0; i<114; i++){
-		if(points[i].building == "house"){
-			points[i].setOnBuild(true);
+	for(var i=0; i<19; i++){
+		var hexTile = hexTiles[i];
+		for(var j=0;j<6;j++){
+			if(hexTile.points[j].building == "house"){
+				hexTile.points[j].setOnBuild(true);
+			}
 		}	
 	}
 	//console.log(points);
+}
+
+function placeRoad(){
+
+	for(var i=0; i<19; i++){
+		var hexTile = hexTiles[i];
+		for(var j=0;j<6;j++){
+			if(hexTile.roads[j].onbuild == false){
+				if(hexTile.roads[j].ax>=hexTile.points[j].xCenter-0.5 || hexTile.roads[j].ax<=hexTile.points[j].xCenter+0.5){
+					if(hexTile.points[j].building == "house" || hexTile.points[j].building == "city"){
+						console.log("i am here");
+						drawingContext.lineWidth = 5;
+						drawingContext.fillStyle = "rgba(255,255,255,0)";
+						drawingContext.strokeStyle = "#33cc33";
+			
+						drawingContext.beginPath();
+				
+						drawingContext.moveTo (hexTile.roads[j].ax,hexTile.roads[j].ay);
+						drawingContext.lineTo (hexTile.roads[j].bx,hexTile.roads[j].by);
+						hexTile.roads[j].setOnBuild(true);
+					}
+				}
+			}
+			drawingContext.closePath();
+			drawingContext.stroke();
+			if(hexTile.points[j].building == "house")
+				drawHause(hexTile.points[j].xCenter, hexTile.points[j].yCenter, hexTile.points[j].radius);
+			if(hexTile.points[j].building == "city")
+				drawCity(hexTile.points[j].xCenter, hexTile.points[j].yCenter, hexTile.points[j].radius);		
+		}   	
+	}
 }
 
 function clearPoints(){
@@ -676,20 +737,21 @@ function clearPoints(){
 	drawingContext.lineWidth = 1;
 	//var radius = 0.0 * size;
 
-	for(var i=0; i<114; i++){
-		if(points[i].building == null){
-			drawingContext.beginPath();
+	for(var i=0; i<19; i++){
+		var hexTile = hexTiles[i];
+		for(var j=0;j<6;j++){
+			if(hexTile.points[j].building == null){
+				drawingContext.beginPath();
 		
-			drawingContext.arc(points[i].xCenter, points[i].yCenter, points[i].radius, points[i].startAngle, points[i].endAngle, points[i].counterclockwise);
-			//console.log(i);
-			drawingContext.closePath();
-			drawingContext.stroke();
-			drawingContext.fill();	
-			points[i].setOnBuild(false);
+				drawingContext.arc(hexTile.points[j].xCenter, hexTile.points[j].yCenter, hexTile.points[j].radius, hexTile.points[j].startAngle, hexTile.points[j].endAngle, hexTile.points[j].counterclockwise);
+				drawingContext.closePath();
+				drawingContext.stroke();
+				drawingContext.fill();	
+				hexTile.points[j].setOnBuild(false);
+			}
+			hexTile.points[j].setOnBuild(false);
 		}
-		points[i].setOnBuild(false);
 	}
-	//console.log(points);
 
 }
 
@@ -850,7 +912,6 @@ $(function () {
             return false;
         });
         socket.on('chat message', function(msg){
-        		
 
         	var img = '<img src="images/girl.png"/>';
         	$('.discussion').append($('<li class="other"> <div class="avatar"> '+img+' </div> <div class="messages">'+'<p>'+msg+'</p>'));
