@@ -88,6 +88,11 @@ var iVictoryPoints = 0,
 	hDice1 = $('#dice1'),
 	hDice2 = $('#dice2'),
 	iRollSum;
+var iWood = $("#lblWood");
+var iBrick = $("#lblBrick");
+var iRock = $("#lblRock");
+var iGrain = $("#lblGrain");
+var iWool = $("#lblWool");
 //**********************Functions************************
 
 function roll(){
