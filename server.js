@@ -23,6 +23,7 @@ var Room = mongoose.model("Room", new Schema({
 }));
 
 var ajRooms = [];
+var roomSockets = [];
 
 app.use(express.static(__dirname + '/'));
 
@@ -32,12 +33,38 @@ io.on('connection', function (socket) {
         // io.emit('chat message', msg);
         socket.broadcast.emit('chat message', msg);
     });
-
-
 });
 //io.emit('some event', { for: 'everyone' }); this sents a message to everyone
+var roomListSocket = io.of('/room-list');
+roomListSocket.on('connection', function(socket){
+	
+	// socket.on('new room', function(data){
+	// 	console.log(data);
+	// 	var room = new Room({
+	// 		roomName: data.name,
+	// 		players:[].push(req.session.user),
+	// 		password:data.password
+	// 	});
+	// 	room.save(function(err){
+	// 		if(err){
+	// 			var err="something bad happened";
+	// 			if(err.code==11000){
+	// 				err="Something happened";
+	// 			}
+	// 		}
+	// 		else{}
+	// 	});
+	// 	socket.emit('all rooms', Room.find());	
+	// 	io.of('/room/'+room.id).on('connection', function(socket){
+	// 		//interactions to be put here
+	// 	});
+	// });
 
+	socket.on('get all rooms', function(data){
+		socket.emit('all rooms', Room.find());
+	});
 
+});
 
 mongoose.connect("mongodb://localhost/newauth");
 //middleware
@@ -103,9 +130,6 @@ app.get("/room-list", function(req, res){
 				res.redirect('/');
 			}
 			else{
-				res.locals.user=user;
-				res.locals.user = JSON.stringify(user);
-				console.log(res.locals.user);
 				res.sendFile(__dirname+"/views/roomList.html")
 			}
 		});
@@ -114,86 +138,62 @@ app.get("/room-list", function(req, res){
 	}
 });
 
-app.get("/all-rooms", function(req, res){
-	// if(req.session && req.session.user){
-	// 	User.findOne({email:req.session.user.email}, function(err, user){
-	// 		if(!user){console.log("User from session not found in database");}
-	// 		else{
-	// 			ajRooms=Room.find();
-	// 			res.JSON(ajRooms);
-	// 		}
-	// 	});
-	// }else{
-	// 	console.log("Session and/or session user not found");
-	// }
-	ajRooms=Room.find();
-	res.JSON(ajRooms);
-});
-
-app.post("/new-room", function(req, res){
-	var room = new Room({
-		roomName: req.body.roomName,
-		player1:[].push(req.session.user),
-		password:req.body.password
-	});
-	room.save(function(err){
-		if(err){
-			var err="something bad happened";
-			if(err.code==11000){
-				error="that email is already taken, try again";
+app.get('/room/:id', function (req, res) {
+	if(req.session && req.session.user){
+		User.findOne({email:req.session.user.email}, function(err, user){
+			if(!user){
+				console.log("Error: User not found.");
+				req.session.reset();
+				res.redirect('/login');
 			}
-			res.sendFile(__dirname+"/views/register.html");
-		}
-		else
-			res.redirect('/');
-	});
-});
-
-app.get('/room', function (req, res) {
-	// if(req.session && req.session.user){
-	// 	User.findOne({email:req.session.user.email}, function(err, user){
-	// 		if(!user){
-	// 			req.session.reset();
-	// 			res.redirect('/login');
-	// 		}
-	// 		else{
-	// 			console.log(res.locals.user);
-	// 			res.sendFile(__dirname+"/index.html")
-	// 		}
-	// 	});
-	// }else{
-	// 	res.redirect('/login');
-	// }
+			else{
+				Room.findById(req.params.id, function(err, room){
+					if(!room){}
+					else
+						if(!room.players.indexOf(req.user)){
+							console.log("This user has not joined the room");
+						}
+						else{}
+							res.sendFile(__dirname+"/index.html");
+				})
+				
+			}
+		});
+	}else{
+		console.log("Error: You are not logged in.");
+		res.redirect('/login');
+	}
 	res.sendFile(__dirname+"/index.html");
 });
 
-app.get("/joinRoom/:id", function(req, res){
+app.get("/roomId", function(req, res){
+	if(req.session && req.session.user){
+		Room.find({players:req.session.user}, function(err, room){
+			if(!room){console.log("Room not found in DB");}
+			else{
+				res.send(room.id);
+			}
+		})
+	}else{console.log("Error: No current session");}
+});
+
+app.get("/join/:id", function(req, res){
 	var room = Room.findById(req.params.id);
 	room.players.push(req.session.user);
 	Room.findByIdAndUpdate(room.id, room);
 	res.redirect("/room/"+room.id);
 });
 
-app.get("/roomId", function(req, res){
-	if(req.session && req.session.user){
-		Room.find({players:req.session.user}, function(err, room){
-			if(!room){}
-			else{
-				res.send(room.id);
-			}
-		})
-	}else{}
-})
-
-// app.get("/room/:id", function(req, res){
-// 	res.sendFile(__dirname+"/index.html");
-// });
-
 app.get("/logout", function(req, res){
 	req.session.reset();
 	res.redirect("/");
-
 });
+
+
+function newRoomSocket(){
+
+}
+
 http.listen(2000, function () {
     console.log('listening on *:2000');
 });

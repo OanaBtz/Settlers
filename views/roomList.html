@@ -10,7 +10,6 @@
 				<th>Room name</th>
 				<th>No. Players</th>
 				<th>Room Type</th>
-				<th>Time Created</th>
 			</tr>
 		</thead>
 		<tbody>
@@ -20,19 +19,18 @@
 	<button id="refresh">Refresh</button>
 	<button id="create">Create Room</button>
 	<div id="createDiv">
-		<form method="post" action>
+		<form id="createForm" action="">
 			<span>Name:</span>
 			<input type="text" id="name" required="true">
 			<br>
 
 			<span>Password:</span>
-			<input type="text" id="password"><input type="checkbox" id="type">
-
+			<input type="text" id="password"><br>
 			<button type="submit">Create</button>
 		</form>
 	</div>
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.7.3/socket.io.slim.min.js"></script>
-	<script src="/roomList.js"></script>
+	<script src="/views/roomList.js"></script>
 </body>
 </html>
