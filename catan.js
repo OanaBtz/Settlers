@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+$('#instructions').hide();
+>>>>>>> 4a3d498faa5c503baaf4d627ccb20743af2505cc
 // ----- Canvas globals -----
 
 var mapCanvas;
@@ -88,6 +92,15 @@ var iVictoryPoints = 0,
 	iRollSum;
 //**********************Functions************************
 
+<<<<<<< HEAD
+=======
+function showInstructions(){
+	$('#seeI').click(function(){
+		$('#instructions').show();
+	});
+}
+
+>>>>>>> 4a3d498faa5c503baaf4d627ccb20743af2505cc
 function roll(){
 	var iDice1 = Math.floor(Math.random() * 6) + 1;
 	hDice1.text(iDice1);
