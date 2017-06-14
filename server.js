@@ -70,6 +70,7 @@ mongoose.connect("mongodb://localhost/newauth");
 //middleware
 
 app.use(bodyParser.urlencoded({extended:true}));
+app.use(bodyParser({uploadDir:'../images/uploads'}));
 
 app.use(session({
 	cookieName:"session", 
